@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SchoolManager.Models
+﻿namespace SchoolManager.Models
 {
+    using System;
+
+    using SchoolManager.Models.Contracts;
+
     [Serializable]
 
-    public class Subject
+    public class Subject : Entity
     {
         private string name = null;
 

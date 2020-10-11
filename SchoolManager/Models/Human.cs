@@ -2,9 +2,11 @@
 {
     using System;
 
+    using SchoolManager.Models.Contracts;
+
     [Serializable]
 
-    public class Human
+    public class Human : Entity
     {
         private string firstName = null;
 

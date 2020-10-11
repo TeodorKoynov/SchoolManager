@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SchoolManager.Models
+﻿namespace SchoolManager.Models
 {
+    using System;
+    using System.Collections.Generic;
 
     [Serializable]
 

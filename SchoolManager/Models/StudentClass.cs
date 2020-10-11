@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SchoolManager.Models
+﻿namespace SchoolManager.Models
 {
+    using SchoolManager.Models.Contracts;
+    using System;
+    using System.Collections.Generic;
+
     [Serializable]
 
-    public class StudentClass
+    public class StudentClass : Entity
     {
         private ClassGrade grade;
 

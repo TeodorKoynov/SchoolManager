@@ -19,7 +19,7 @@ namespace SchoolManager.Models
         public int Salary
         {
             get { return this.salary; }
-            set { this.salary = salary; }
+            set { this.salary = value; }
         }
     }
 }
