@@ -1,7 +1,7 @@
 ﻿namespace SchoolManager
 {
     using System;
-
+    using System.Collections.Generic;
     using SchoolManager.Models;
     using SchoolManager.Repositories;
 
@@ -9,16 +9,7 @@
     {
         public static void Main(string[] args)
         {
-            SchoolRepository schoolRepository = new SchoolRepository();
 
-            var school = new School() { Name = "Test" };
-            schoolRepository.Save(school);
-
-            school.Name = "new name";
-
-            schoolRepository.Save(school);
-
-            Console.WriteLine(schoolRepository.Find(school.Id).Name);
         }
     }
 }
@@ -42,13 +33,13 @@
     // + (Main) Teacher
 
     // Student
-    // + First, Middle, Last Name
-    // + Birthdate
-    // + Phone number
-    // + Parent phone number
+    // + First, Middle, Last Name //
+    // + Birthdate //
+    // + Phone number //
+    // + Parent phone number 
     // + Number in class
-    // + ЕГН
-    // + Gender
+    // + ЕГН //
+    // + Gender //
     // + Collection of (Subject + Grades)
 
     // Teacher
