@@ -14,11 +14,11 @@
         private string parentPhone = null;
         
 
-        public Student(Human human, int numberInGrade, List<Subject> subjects, string parentPhone)
+        public Student(Human human, string parentPhone)
             :base(human.FirstName, human.MiddleName, human.LastName, human.Gender, human.Age, human.BirthDate, human.IdentityNumber, human.PhoneNumber)
         {
-            this.numberInGrade = numberInGrade;
-            this.subjects = subjects;
+            this.numberInGrade = 0;
+            this.subjects = null;
             this.parentPhone = parentPhone;
         }
 
