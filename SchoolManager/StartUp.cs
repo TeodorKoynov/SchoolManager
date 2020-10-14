@@ -2,6 +2,8 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
+    using System.Runtime.CompilerServices;
     using SchoolManager.Models;
     using SchoolManager.Repositories;
 
@@ -70,9 +72,337 @@
             Director director1 = new Director(human1, 1700);
 
             School school1 = new School("Mg", SchoolType.HighSchool, director1, viseDirectors1, studentClasses, staff1, teacherStaff);
-            
+
+            SchoolRepository schoolRepository1 = new SchoolRepository();
+            schoolRepository1.Save(school1);
+            ///////////////////////////////////////////////////////////////////////////////////////////////
+
+            SchoolRepository schoolRepository = new SchoolRepository();
+            ShowMenu(schoolRepository);
 
         }
+        private static void ShowMenu(SchoolRepository schoolRepository)
+        {
+            bool showMenu = true;
+
+            while (showMenu)
+            {
+                showMenu = MainMenu(schoolRepository);
+            }
+        }
+
+        private static bool MainMenu(SchoolRepository schoolRepository)
+        {
+            Console.Clear();
+            Console.WriteLine("1) Create School");
+            Console.WriteLine("2) Select School");
+            Console.WriteLine("3) Exit");
+            Console.WriteLine("\nSelect an option:");
+
+            switch (Console.ReadLine())
+            {
+                case "1":
+                    CreateSchool(schoolRepository);
+                    return true;
+
+                case "2":
+                    SelectSchool(schoolRepository);
+                    return true;
+
+                case "3":
+                    return false;
+
+                default:
+                    return true;
+            }
+        }
+
+        private static void SelectSchool(SchoolRepository schoolRepository)
+        {
+            Console.Clear();
+            
+            List<School> schools = schoolRepository.GetAll().ToList();
+            
+            foreach (School school in schools)
+            {
+                Console.WriteLine($"-------> {school.Name}");
+            }
+
+            Console.WriteLine("\nSelect a School:");
+
+            string line = Console.ReadLine();
+
+            foreach (School school in schools)
+            {
+                if (school.Name == line)
+                {
+                    Console.WriteLine("School selected!");
+                }
+            }
+        }
+
+        private static void CreateSchool(SchoolRepository schoolRepository)
+        {
+            Console.Clear();
+
+            string name = SelectSchoolName();
+
+            SchoolType type = SelectSchoolType();
+
+            Director director = SelectDirector();
+
+            List<Teacher> viseDirectors = new List<Teacher>();
+
+            List<StudentClass> studentClasses = new List<StudentClass>();
+
+            List<Worker> workers = new List<Worker>();
+
+            List<Teacher> teachers = new List<Teacher>();
+
+            School school = new School(name, type, director, viseDirectors, studentClasses, workers, teachers);
+
+            schoolRepository.Save(school);
+        }
+
+        private static string SelectSchoolName()
+        {
+            Console.WriteLine("Plase, Enter a Name for The School:");
+            string name = SelectName();
+          
+            return name;
+        }
+
+        private static Director SelectDirector()
+        {
+            Console.WriteLine("\nCreate Director for The School");
+
+            Human human = SelectHuman();
+
+            int salary = SelectSalary();
+
+            Director director = new Director(human, salary);
+
+            return director;
+        }
+
+        private static int SelectSalary()
+        {
+            Console.WriteLine("Please, Enter a Salary:");
+
+            string line = Console.ReadLine();
+
+            int salary;
+
+            while (!int.TryParse(line, out salary) || !(salary > 0))
+            {
+                Console.WriteLine("Incorrect Salary!");
+                Console.WriteLine("\nPlease, Enter Salary:");
+               
+                line = Console.ReadLine();
+            }
+           
+            salary = int.Parse(line);
+
+            return salary;
+        }
+
+        private static Human SelectHuman()
+        {
+            Console.WriteLine("Enter First Name:");
+            string firstName = SelectName();
+
+            Console.WriteLine("Enter Middle Name:");
+            string middleName = SelectName();
+
+            Console.WriteLine("Enter Last Name:");
+            string lastName = SelectName();
+
+            Gender gender = SelectGender();
+
+            int age = SelectAge();
+
+            DateTime birthDate = SelectBirthDate();
+
+            string identityNumber = null;
+
+            string phoneNumber = SelectPhoneNumber();
+
+            Human human = new Human(firstName, middleName, lastName, gender, age, birthDate, identityNumber, phoneNumber);
+
+            return human;
+        }
+
+        private static string SelectPhoneNumber()
+        {
+            Console.WriteLine("Please, Enter a Phone Number:");
+
+            string line = Console.ReadLine();
+
+            while (line.Length != 10)
+            {
+                Console.WriteLine("Please, Enter a Correct Phone Number!");
+                
+                line = Console.ReadLine();
+            }
+            
+            return line;
+        }
+
+        private static DateTime SelectBirthDate()
+        {
+            Console.WriteLine("\nPlease, Enter a Birth Date:");
+
+            Console.WriteLine("-----> Enter a Year:");
+
+            int year = SelectYear();
+
+            Console.WriteLine("-----> Enter a Month:");
+
+            int month = SelectMonth();
+
+            Console.WriteLine("-----> Enter a Day:");
+
+            int day = SelectDay();
+
+            DateTime birthDate = new DateTime(year, month, day);
+
+            return birthDate;
+        }
+
+        private static int SelectDay()
+        {
+            string line = Console.ReadLine();
+
+            int day;
+
+            while (!int.TryParse(line, out day) || !(day >= 1 && day <= 30))
+            {
+                Console.WriteLine("         Incorrect Day!");
+                Console.WriteLine("\nPlease, Enter an Correct Day:");
+
+                line = Console.ReadLine();
+            }
+
+            day = int.Parse(line);
+            
+            return day;
+        }
+
+        private static int SelectMonth()
+        {
+            string line = Console.ReadLine();
+
+            int month;
+
+            while (!int.TryParse(line, out month) || !(month >= 1 && month <= 12))
+            {
+                Console.WriteLine("         Incorrect Month!");
+                Console.WriteLine("\nPlease, Enter an Correct Month:");
+
+                line = Console.ReadLine();
+            }
+            month = int.Parse(line);
+            
+            return month;
+        }
+
+        private static int SelectYear()
+        {
+            string line = Console.ReadLine();
+
+            int year;
+            
+            while ((line.Length <= 2 && line.Length > 5) || !int.TryParse(line, out year) || !(year > 1500 && year <= 3000))
+            {
+                Console.WriteLine("         Incorrect Year!");
+                Console.WriteLine("\nPlease, Enter an Correct Year:");
+
+                line = Console.ReadLine();
+            }
+            year = int.Parse(line);
+            
+            return year;
+        }
+
+        private static int SelectAge()
+        {
+            int age;
+            Console.WriteLine("Please, Enter an Age:");
+            string line = Console.ReadLine();
+
+            while (!(line.Length > 0 && line.Length <= 3) || !int.TryParse(line, out age) || !(age > 0 && age <= 160))
+            {
+                Console.WriteLine("Incorrect Age!");
+                Console.WriteLine("\nPlease, Enter an Age:");
+                line = Console.ReadLine();
+            }
+            age = int.Parse(line);
+           
+            return age;
+        }
+
+        private static Gender SelectGender()
+        {
+            Console.WriteLine("Please enter a gender");
+            Console.WriteLine("===== Male ==== Female =====");
+            switch (Console.ReadLine().ToLower())
+            {
+                case "male":
+                    return Gender.Male;
+                case "female":
+                    return Gender.Female;
+                default:
+                    Console.WriteLine("Please, Enter a Correct Gender!");
+                    break;
+            }
+            
+            return SelectGender();
+        }
+
+        private static string SelectName()
+        {
+            Console.WriteLine("Plese enter a name from 3 to 60 characters:");
+
+            string line = Console.ReadLine();
+            while (line.Length < 2 || line.Length >= 60)
+            {
+                Console.WriteLine("Incorect name!");
+                Console.WriteLine("\nPlese enter a name from 3 to 60 characters:");
+                line = Console.ReadLine();
+            }
+           
+            return line;
+        }
+
+        private static SchoolType SelectSchoolType()
+        {
+            Console.WriteLine("\nEnter School Type:");
+            Console.WriteLine("Available Types -> Primary School, Secondary School, Middle School, High School, University");
+            switch (Console.ReadLine().ToLower())
+            {
+                case "primary school":
+                    return SchoolType.PrimarySchool;
+               
+                case "secondary school":
+                    return SchoolType.SecondarySchool;
+                
+                case "middle school":
+                    return SchoolType.MiddleSchool;
+               
+                case "high school":
+                    return SchoolType.HighSchool;
+               
+                case "university":
+                    return SchoolType.University;
+               
+                default:
+                    Console.WriteLine("Please, Enter a Correct Type!");
+                    break;
+            }
+         
+            return SelectSchoolType();
+        }
+
     }
 }
 
