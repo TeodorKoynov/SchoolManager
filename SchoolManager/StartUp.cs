@@ -120,7 +120,7 @@
         private static void SelectSchool(SchoolRepository schoolRepository)
         {
             Console.Clear();
-            
+            Console.WriteLine("===== Select School =====");
             List<School> schools = schoolRepository.GetAll().ToList();
             
             foreach (School school in schools)
@@ -189,7 +189,7 @@
         {
             Console.WriteLine("Please, Enter a Salary:");
 
-            string line = Console.ReadLine();
+            string line = Console.ReadLine().Trim();
 
             int salary;
 
@@ -198,7 +198,7 @@
                 Console.WriteLine("Incorrect Salary!");
                 Console.WriteLine("\nPlease, Enter Salary:");
                
-                line = Console.ReadLine();
+                line = Console.ReadLine().Trim();
             }
            
             salary = int.Parse(line);
@@ -236,13 +236,13 @@
         {
             Console.WriteLine("Please, Enter a Phone Number:");
 
-            string line = Console.ReadLine();
+            string line = Console.ReadLine().Trim();
 
-            while (line.Length != 10)
+            while (line.Length != 10 || !int.TryParse(line, out _))
             {
                 Console.WriteLine("Please, Enter a Correct Phone Number!");
                 
-                line = Console.ReadLine();
+                line = Console.ReadLine().Trim();
             }
             
             return line;
@@ -271,7 +271,7 @@
 
         private static int SelectDay()
         {
-            string line = Console.ReadLine();
+            string line = Console.ReadLine().Trim();
 
             int day;
 
@@ -280,7 +280,7 @@
                 Console.WriteLine("         Incorrect Day!");
                 Console.WriteLine("\nPlease, Enter an Correct Day:");
 
-                line = Console.ReadLine();
+                line = Console.ReadLine().Trim();
             }
 
             day = int.Parse(line);
@@ -290,7 +290,7 @@
 
         private static int SelectMonth()
         {
-            string line = Console.ReadLine();
+            string line = Console.ReadLine().Trim();
 
             int month;
 
@@ -299,7 +299,7 @@
                 Console.WriteLine("         Incorrect Month!");
                 Console.WriteLine("\nPlease, Enter an Correct Month:");
 
-                line = Console.ReadLine();
+                line = Console.ReadLine().Trim();
             }
             month = int.Parse(line);
             
@@ -308,7 +308,7 @@
 
         private static int SelectYear()
         {
-            string line = Console.ReadLine();
+            string line = Console.ReadLine().Trim();
 
             int year;
             
@@ -317,7 +317,7 @@
                 Console.WriteLine("         Incorrect Year!");
                 Console.WriteLine("\nPlease, Enter an Correct Year:");
 
-                line = Console.ReadLine();
+                line = Console.ReadLine().Trim();
             }
             year = int.Parse(line);
             
@@ -327,14 +327,17 @@
         private static int SelectAge()
         {
             int age;
+
             Console.WriteLine("Please, Enter an Age:");
-            string line = Console.ReadLine();
+
+            string line = Console.ReadLine().Trim();
 
             while (!(line.Length > 0 && line.Length <= 3) || !int.TryParse(line, out age) || !(age > 0 && age <= 160))
             {
                 Console.WriteLine("Incorrect Age!");
                 Console.WriteLine("\nPlease, Enter an Age:");
-                line = Console.ReadLine();
+
+                line = Console.ReadLine().Trim();
             }
             age = int.Parse(line);
            
@@ -345,7 +348,7 @@
         {
             Console.WriteLine("Please enter a gender");
             Console.WriteLine("===== Male ==== Female =====");
-            switch (Console.ReadLine().ToLower())
+            switch (Console.ReadLine().ToLower().Trim())
             {
                 case "male":
                     return Gender.Male;
@@ -363,14 +366,14 @@
         {
             Console.WriteLine("Plese enter a name from 3 to 60 characters:");
 
-            string line = Console.ReadLine();
+            string line = Console.ReadLine().Trim();
             while (line.Length < 2 || line.Length >= 60)
             {
                 Console.WriteLine("Incorect name!");
                 Console.WriteLine("\nPlese enter a name from 3 to 60 characters:");
                 line = Console.ReadLine();
             }
-           
+
             return line;
         }
 
@@ -378,7 +381,7 @@
         {
             Console.WriteLine("\nEnter School Type:");
             Console.WriteLine("Available Types -> Primary School, Secondary School, Middle School, High School, University");
-            switch (Console.ReadLine().ToLower())
+            switch (Console.ReadLine().ToLower().Trim())
             {
                 case "primary school":
                     return SchoolType.PrimarySchool;
