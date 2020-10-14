@@ -16,5 +16,10 @@
             this.position = position;
             this.salary = salary;
         }
+
+        public override string ToString()
+        {
+            return $"{this.FirstName} {this.MiddleName} {this.LastName} is {this.position}";
+        }
     }
 }

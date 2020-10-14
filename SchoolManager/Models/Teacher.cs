@@ -30,5 +30,9 @@
             set { this.salary = value; }
         }
 
+        public override string ToString()
+        {
+            return $"{base.FirstName} {base.MiddleName} {base.LastName}";
+        }
     }
 }

@@ -2,8 +2,11 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.Tracing;
     using System.Linq;
+    using System.Linq.Expressions;
     using System.Runtime.CompilerServices;
+    using System.Xml;
     using SchoolManager.Models;
     using SchoolManager.Repositories;
 
@@ -53,8 +56,8 @@
 
             StudentClass studentClass1 = new StudentClass(ClassGrade.Forth, GradeChar.A, students, teacher1);
 
-            List<StudentClass> studentClasses = new List<StudentClass>();
-            studentClasses.Add(studentClass1);
+            List<StudentClass> studentClasses1 = new List<StudentClass>();
+            studentClasses1.Add(studentClass1);
 
             Human human21 = new Human("Milko", "Nqkoq", "Kenova", Gender.Female, 60, dateTime1, "0983849209", "08771728942");
             Human human22 = new Human("Lina", "Nqkoq", "Peeva", Gender.Female, 60, dateTime1, "0983849209", "08771728942");
@@ -71,16 +74,37 @@
 
             Director director1 = new Director(human1, 1700);
 
-            School school1 = new School("Mg", SchoolType.HighSchool, director1, viseDirectors1, studentClasses, staff1, teacherStaff);
+            School school1 = new School("Mg", SchoolType.HighSchool, director1, viseDirectors1, studentClasses1, staff1, teacherStaff);
+
+            List<Teacher> viseDirectors = new List<Teacher>();
+
+            List<StudentClass> studentClasses = new List<StudentClass>();
+
+            List<Worker> workers = new List<Worker>();
+
+            List<Teacher> teachers = new List<Teacher>();
+
+            School school2 = new School("Turgovska", SchoolType.HighSchool, director1, viseDirectors, studentClasses, workers, teacherStaff);
+            School school3 = new School("Humanitarna", SchoolType.HighSchool, director1, viseDirectors, studentClasses, workers, teacherStaff);
+            School school4 = new School("Angliiska", SchoolType.HighSchool, director1, viseDirectors, studentClasses, workers, teacherStaff);
+
 
             SchoolRepository schoolRepository1 = new SchoolRepository();
             schoolRepository1.Save(school1);
             ///////////////////////////////////////////////////////////////////////////////////////////////
 
             SchoolRepository schoolRepository = new SchoolRepository();
+
+            schoolRepository.Save(school1); // REMOVE
+            schoolRepository.Save(school2); // REMOVE
+            schoolRepository.Save(school3); // REMOVE
+            schoolRepository.Save(school4); // REMOVE
+
+
             ShowMenu(schoolRepository);
 
         }
+
         private static void ShowMenu(SchoolRepository schoolRepository)
         {
             bool showMenu = true;
@@ -125,19 +149,123 @@
             
             foreach (School school in schools)
             {
-                Console.WriteLine($"-------> {school.Name}");
+                Console.WriteLine($"------->Id= {school.Id} Name: {school.Name}");
             }
 
-            Console.WriteLine("\nSelect a School:");
+            Console.WriteLine("\nSelect a School Id:");
 
-            string line = Console.ReadLine();
+            string line = Console.ReadLine().Trim();
+            
+            int id = 0;
 
-            foreach (School school in schools)
+            while (!int.TryParse(line, out id) || (schoolRepository.Find(id) == null))
             {
-                if (school.Name == line)
+                if (line == "`")
                 {
-                    Console.WriteLine("School selected!");
+                    return;
                 }
+                Console.WriteLine("Invalid Id!");
+                line = Console.ReadLine();
+
+            }
+
+            School schoolToEdit = schoolRepository.Find(id);
+            
+            EditSchool(schoolToEdit, schoolRepository, id);
+        }
+
+        private static void EditSchool(School schoolToEdit, SchoolRepository schoolRepository, int id) // may remove id
+        {
+            Console.Clear();
+            Console.WriteLine(schoolToEdit.Name);
+
+            Console.Write("\nSchool Type: ");
+            switch (schoolToEdit.SchoolType)
+            {
+                case SchoolType.PrimarySchool:
+                    Console.Write("Primary School\n");
+                    break;
+                case SchoolType.SecondarySchool:
+                    Console.Write("Secondary School\n");
+                    break;
+                case SchoolType.MiddleSchool:
+                    Console.Write("Middle School\n");
+                    break;
+                case SchoolType.HighSchool:
+                    Console.Write("High School\n");
+                    break;
+                case SchoolType.University:
+                    Console.Write("University\n");
+                    break;
+                default:
+                    break;
+            }
+
+            Console.WriteLine($"\nDirector: {schoolToEdit.Director.FirstName} {schoolToEdit.Director.MiddleName} {schoolToEdit.Director.LastName}");
+
+            Console.WriteLine("\nVise Directors:");
+            if (schoolToEdit.ViseDirectors.Count() != 0)
+            {
+                foreach (Teacher viseDirector in schoolToEdit.ViseDirectors)
+                {
+                    Console.WriteLine($" --- {viseDirector}");
+                }
+            }
+            else
+            {
+                Console.WriteLine(" ----------- Emty ------------");
+            }
+
+          
+            Console.WriteLine("\nTeachers:");
+            if (schoolToEdit.TeachersStaff.Count() != 0)
+            {
+                foreach (Teacher teacher in schoolToEdit.TeachersStaff)
+                {
+                    Console.WriteLine($" --- {teacher}");
+                }
+            }
+            else
+            {
+                Console.WriteLine(" ----------- Emty ------------");
+            }
+
+            Console.WriteLine($"\nStudent Classes:");
+            if (schoolToEdit.StudentClasses.Count() != 0)
+            {
+                foreach (StudentClass studentClass in schoolToEdit.StudentClasses)
+                {
+                    Console.WriteLine($" --- {studentClass}");
+                }
+            }
+            else
+            {
+                Console.WriteLine(" ----------- Emty ------------");
+            }
+
+            Console.WriteLine("\nSchool Saff:");
+            if (schoolToEdit.Staff.Count() != 0)
+            {
+                foreach (Worker worker in schoolToEdit.Staff)
+                {
+                    Console.WriteLine($" --- {worker}");
+                }
+            }
+            else
+            {
+                Console.WriteLine(" ----------- Emty ------------");
+            }
+
+
+            string line = Console.ReadLine().Trim().ToLower();
+
+            if (line == "`")
+            {
+                SelectSchool(schoolRepository);
+            }
+            else
+            {
+
             }
         }
 

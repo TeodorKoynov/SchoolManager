@@ -48,5 +48,9 @@
             set { this.mainTeacher = value; }
         }
 
+        public override string ToString()
+        {
+            return $"{this.grade} {this.gradeChar}";
+        }
     }
 }
