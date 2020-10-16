@@ -100,7 +100,6 @@
             schoolRepository.Save(school3); // REMOVE
             schoolRepository.Save(school4); // REMOVE
 
-
             ShowMenu(schoolRepository);
 
         }
@@ -177,9 +176,9 @@
         private static void EditSchool(School schoolToEdit, SchoolRepository schoolRepository, int id) // may remove id
         {
             Console.Clear();
-            Console.WriteLine(schoolToEdit.Name);
+            Console.WriteLine($"1 Name:{schoolToEdit.Name}");
 
-            Console.Write("\nSchool Type: ");
+            Console.Write("\n2 School Type: ");
             switch (schoolToEdit.SchoolType)
             {
                 case SchoolType.PrimarySchool:
@@ -201,9 +200,9 @@
                     break;
             }
 
-            Console.WriteLine($"\nDirector: {schoolToEdit.Director.FirstName} {schoolToEdit.Director.MiddleName} {schoolToEdit.Director.LastName}");
+            Console.WriteLine($"\n3 Director: {schoolToEdit.Director.FirstName} {schoolToEdit.Director.MiddleName} {schoolToEdit.Director.LastName}");
 
-            Console.WriteLine("\nVise Directors:");
+            Console.WriteLine("\n4 Vise Directors:");
             if (schoolToEdit.ViseDirectors.Count() != 0)
             {
                 foreach (Teacher viseDirector in schoolToEdit.ViseDirectors)
@@ -215,9 +214,8 @@
             {
                 Console.WriteLine(" ----------- Emty ------------");
             }
-
           
-            Console.WriteLine("\nTeachers:");
+            Console.WriteLine("\n5 Teachers:");
             if (schoolToEdit.TeachersStaff.Count() != 0)
             {
                 foreach (Teacher teacher in schoolToEdit.TeachersStaff)
@@ -230,7 +228,8 @@
                 Console.WriteLine(" ----------- Emty ------------");
             }
 
-            Console.WriteLine($"\nStudent Classes:");
+            Console.WriteLine($"\n6 Student Classes:");
+           
             if (schoolToEdit.StudentClasses.Count() != 0)
             {
                 foreach (StudentClass studentClass in schoolToEdit.StudentClasses)
@@ -243,7 +242,7 @@
                 Console.WriteLine(" ----------- Emty ------------");
             }
 
-            Console.WriteLine("\nSchool Saff:");
+            Console.WriteLine("\n7 School Saff:");
             if (schoolToEdit.Staff.Count() != 0)
             {
                 foreach (Worker worker in schoolToEdit.Staff)
@@ -256,16 +255,293 @@
                 Console.WriteLine(" ----------- Emty ------------");
             }
 
-
+            Console.WriteLine("\nTo edit enter component number:");
             string line = Console.ReadLine().Trim().ToLower();
 
             if (line == "`")
             {
                 SelectSchool(schoolRepository);
+                return;
             }
             else
             {
+                switch (line)
+                {
+                    case "1":
+                        EditSchoolName(schoolToEdit, schoolRepository, id);
+                        break;
+                    case "2":
+                        EditSchoolType(schoolToEdit, schoolRepository, id);
+                        break;
+                    case "3":
+                        EditSchoolDirector(schoolToEdit, schoolRepository, id);
+                        break;
+                    case "4":
 
+                        break;
+                    case "5":
+
+                        break;
+                    case "6":
+
+                        break;
+                    case "7":
+
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        private static void EditSchoolDirector(School schoolToEdit, SchoolRepository schoolRepository, int id)
+        {
+            Console.Clear();
+
+            Console.WriteLine($"=== {schoolToEdit.Name}'s Director ===");
+
+            Console.WriteLine($" 1.{schoolToEdit.Director.FirstName} {schoolToEdit.Director.MiddleName} {schoolToEdit.Director.LastName}");
+           
+            Console.WriteLine($" 2.Phone number: {schoolToEdit.Director.PhoneNumber}");
+            
+            Console.WriteLine($" 3.Salary: {schoolToEdit.Director.Salary}");
+
+            Console.WriteLine($" 4.Gender {schoolToEdit.Director.Gender}");
+
+            Console.WriteLine($" 5.Identity number: {schoolToEdit.Director.IdentityNumber}");
+
+            Console.WriteLine($" 6.Birth date: {schoolToEdit.Director.BirthDate}");
+
+            Console.WriteLine("\nEnter the number of the component to edit:");
+
+            string line = Console.ReadLine();
+
+            switch (line)
+            {
+                case "1":
+                    ChangeDirectorName(schoolToEdit, schoolRepository, id);
+                    break;
+                case "2":
+                    ChangeDirectorPhoneNumber(schoolToEdit, schoolRepository, id);
+                    break;
+                case "3":
+                    ChangeDirectorSalary(schoolToEdit, schoolRepository, id);
+                    break;
+                case "4":
+                    break;
+                case "5":
+                    break;
+                case "6":
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private static void ChangeDirectorSalary(School schoolToEdit, SchoolRepository schoolRepository, int id)
+        {
+            Console.Clear();
+
+            Console.WriteLine($"Current Salary: {schoolToEdit.Director.Salary}");
+
+            Console.WriteLine("\nEnter new Salary or '`' to return:");
+
+            string line = Console.ReadLine().Trim();
+
+            int salary;
+
+            if (line == "`")
+            {
+                EditSchoolDirector(schoolToEdit, schoolRepository, id);
+                return;
+            }
+            else
+            {
+                while (!int.TryParse(line, out salary) || line == "" || salary <= 0)
+                {
+                    Console.WriteLine("Incorrect Salary!");
+
+                    Console.WriteLine("\nEnter new Salary or '`' to return:");
+                    line = Console.ReadLine();
+
+                    if (line == "`")
+                    {
+                        EditSchoolDirector(schoolToEdit, schoolRepository, id);
+                        return;
+                    }
+                }
+
+                salary = int.Parse(line);
+
+                schoolToEdit.Director.Salary = salary;
+
+                schoolRepository.Save(schoolToEdit);
+
+                EditSchoolDirector(schoolToEdit, schoolRepository, id);
+            }
+        }
+
+        private static void ChangeDirectorPhoneNumber(School schoolToEdit, SchoolRepository schoolRepository, int id)
+        {
+            Console.Clear();
+
+            Console.WriteLine($"Current Director Phone Number: {schoolToEdit.Director.PhoneNumber}");
+
+            Console.WriteLine("\nEnter new Phone Number or '`' to return:");
+
+            string line = Console.ReadLine().Trim();
+
+            if (line == "`")
+            {
+                EditSchoolDirector(schoolToEdit, schoolRepository, id);
+                return;
+            }
+            else
+            {
+                while (!int.TryParse(line, out _) || line.Length != 10)
+                {
+                    Console.WriteLine("Incorrect Phone Number!");
+
+                    Console.WriteLine("\nEnter new Phone Number or '`' to return:");
+                    line = Console.ReadLine();
+                    if (line == "`")
+                    {
+                        EditSchoolDirector(schoolToEdit, schoolRepository, id);
+                        return;
+                    }
+                }
+
+                schoolToEdit.Director.PhoneNumber = line;
+
+                schoolRepository.Save(schoolToEdit);
+
+                EditSchoolDirector(schoolToEdit, schoolRepository, id);
+            }
+        }
+
+        private static void ChangeDirectorName(School schoolToEdit, SchoolRepository schoolRepository, int id)
+        {
+            Console.Clear();
+
+            Console.WriteLine($"Current Director's Name: {schoolToEdit.Director.FirstName} {schoolToEdit.Director.MiddleName} {schoolToEdit.Director.LastName}");
+
+            Console.WriteLine("\nEnter new First Name:");
+
+            string line = Console.ReadLine().Trim();
+           
+            while (int.TryParse(line, out _))
+            {
+                Console.WriteLine("Incorrect Name!");
+                Console.WriteLine("\nEnter new First Name:");
+                line = Console.ReadLine().Trim();
+            }
+
+            schoolToEdit.Director.FirstName = line;
+
+            Console.WriteLine("\nEnter new Middle Name:");
+
+            line = Console.ReadLine().Trim();
+            
+            while (int.TryParse(line, out _))
+            {
+                Console.WriteLine("Incorrect Name!");
+                Console.WriteLine("\nEnter new Middle Name:");
+                line = Console.ReadLine().Trim();
+            }
+
+            schoolToEdit.Director.MiddleName = line;
+
+            Console.WriteLine("\nEnter new Last Name:");
+            
+            line = Console.ReadLine().Trim();
+            
+            while (int.TryParse(line, out _))
+            {
+                Console.WriteLine("Incorrect Name!");
+                Console.WriteLine("\nEnter new Last Name:");
+                line = Console.ReadLine().Trim();
+            }
+
+            schoolToEdit.Director.LastName = line;
+
+            schoolRepository.Save(schoolToEdit);
+
+            EditSchoolDirector(schoolToEdit, schoolRepository, id);
+        }
+
+        private static void EditSchoolType(School schoolToEdit, SchoolRepository schoolRepository, int id)
+        {
+            Console.Clear();
+
+            Console.WriteLine($"Current School Type: {schoolToEdit.SchoolType}");
+            
+            Console.WriteLine("\nPrimary School, Secondary School, Middle School, High School, University" +
+                "\nType new type from the above or '`' to return...");
+
+            string line = Console.ReadLine().Trim().ToLower();
+
+            if (line == "`")
+            {
+                EditSchool(schoolToEdit, schoolRepository, id);
+            }
+            else switch (line)
+            {
+                case "primary school":
+                    schoolToEdit.SchoolType = SchoolType.PrimarySchool;
+                    schoolRepository.Save(schoolToEdit);
+                    EditSchool(schoolToEdit, schoolRepository, id);
+                    break;
+                case "secondary school":
+                    schoolToEdit.SchoolType = SchoolType.SecondarySchool;
+                    schoolRepository.Save(schoolToEdit);
+                    EditSchool(schoolToEdit, schoolRepository, id);
+                    break;
+                case "middle school":
+                    schoolToEdit.SchoolType = SchoolType.MiddleSchool;
+                    schoolRepository.Save(schoolToEdit);
+                    EditSchool(schoolToEdit, schoolRepository, id);
+                    break;
+                case "high school":
+                    schoolToEdit.SchoolType = SchoolType.HighSchool;
+                    schoolRepository.Save(schoolToEdit);
+                    EditSchool(schoolToEdit, schoolRepository, id);
+                    break;
+                case "university":
+                    schoolToEdit.SchoolType = SchoolType.University;
+                    schoolRepository.Save(schoolToEdit);
+                    EditSchool(schoolToEdit, schoolRepository, id);
+                    break;
+                default:
+                    Console.WriteLine("Incorrect school type!");
+
+                    Console.WriteLine("\nClick Enter to continue...");
+
+                    Console.ReadLine();
+
+                    EditSchoolType(schoolToEdit, schoolRepository, id);
+                    break;
+            }
+        }
+
+        private static void EditSchoolName(School schoolToEdit, SchoolRepository schoolRepository, int id)
+        {
+            Console.Clear();
+            
+            Console.WriteLine($"Current School Name: {schoolToEdit.Name}");
+
+            Console.WriteLine("\nEnter new name or '`' to return");
+
+            string line = Console.ReadLine().Trim();
+
+            if (line == "`")
+            {
+                EditSchool(schoolToEdit, schoolRepository, id);
+            }
+            else
+            {
+                schoolToEdit.Name = line;
+                schoolRepository.Save(schoolToEdit);
+                EditSchool(schoolToEdit, schoolRepository, id);
             }
         }
 
