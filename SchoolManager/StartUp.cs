@@ -287,8 +287,9 @@
                     case "4":
                         EditSchoolViseDirectors(schoolToEdit, schoolRepository, id);
                         break;
-                    case "5":
 
+                    case "5":
+                        EditSchoolTeachers(schoolToEdit, schoolRepository, id);
                         break;
                     case "6":
 
@@ -307,6 +308,664 @@
                         return;
                 }
             }
+        }
+
+        private static void EditSchoolTeachers(School schoolToEdit, SchoolRepository schoolRepository, int id)
+        {
+            Console.Clear();
+
+            Console.WriteLine("Current Teachers:");
+
+            if (schoolToEdit.TeachersStaff.Count() != 0)
+            {
+                int count = 0;
+                foreach (Teacher teacher in schoolToEdit.TeachersStaff)
+                {
+                    count++;
+                    Console.WriteLine($"{count} - {teacher}");
+                }
+
+                Console.WriteLine("\n=== Available operation ===");
+                Console.WriteLine("  1.Add new Teacher");
+                Console.WriteLine("  2.Select Teacher");
+                Console.WriteLine("  3.Delete Teacher");
+
+                Console.WriteLine("\nEnter a number of the wish operation or '`' to return:");
+
+                string line = Console.ReadLine().Trim();
+
+                if (line == "`")
+                {
+                    EditSchool(schoolToEdit, schoolRepository, id);
+                    return;
+                }
+                switch (line)
+                {
+                    case "1":
+                        AddTeacher(schoolToEdit, schoolRepository, id);
+                        break;
+
+                    case "2":
+                        Console.WriteLine("\nEnter Teacher Number or '`' to return:");
+
+                        string newLine = Console.ReadLine().Trim();
+
+                        if (newLine == "`")
+                        {
+                            EditSchoolTeachers(schoolToEdit, schoolRepository, id);
+                            return;
+                        }
+
+                        int number;
+
+                        while (!int.TryParse(newLine, out number) || !(number > 0 && number <= schoolToEdit.TeachersStaff.Count()))
+                        {
+                            Console.WriteLine("Incorrect Teacher Number!");
+
+                            Console.WriteLine("\nEnter Teacher Number or '`' to return:");
+
+                            newLine = Console.ReadLine().Trim();
+
+                            if (newLine == "`")
+                            {
+                                EditSchoolTeachers(schoolToEdit, schoolRepository, id);
+                                return;
+                            }
+                        }
+
+                        number = int.Parse(newLine);
+
+                        int index = number - 1;
+
+                        SelectTeacherFromStaff(schoolToEdit, schoolRepository, id, index);
+                        return;
+                        break;
+
+                    case "3":
+                        Console.WriteLine("\nEnter Teacher Number or '`' to return:");
+
+                        newLine = Console.ReadLine().Trim();
+
+                        if (newLine == "`")
+                        {
+                            EditSchoolTeachers(schoolToEdit, schoolRepository, id);
+                            return;
+                        }
+
+                        while (!int.TryParse(newLine, out number) || !(number > 0 && number <= schoolToEdit.TeachersStaff.Count()))
+                        {
+                            Console.WriteLine("Incorrect Teacher Number!");
+
+                            Console.WriteLine("\nEnter Teacher Number or '`' to return");
+
+                            newLine = Console.ReadLine().Trim();
+
+                            if (newLine == "`")
+                            {
+                                EditSchoolTeachers(schoolToEdit, schoolRepository, id);
+                                return;
+                            }
+
+                        }
+
+                        number = int.Parse(newLine);
+
+                        index = number - 1;
+
+                        DeleteTeacher(schoolToEdit, schoolRepository, id, index);
+                        break;
+
+                    default:
+                        Console.WriteLine("\nIncorrect Number!");
+
+                        Console.WriteLine("Click Enter...");
+
+                        Console.ReadLine();
+
+                        EditSchoolTeachers(schoolToEdit, schoolRepository, id);
+                        return;
+                }
+            }
+            else
+            {
+                Console.WriteLine(" ----------- Empty ------------");
+
+                Console.WriteLine("\n=== Available operation ===");
+                Console.WriteLine("  1.Add new Teacher");
+
+                Console.WriteLine("\nEnter a number of the wish operation or '`' to return::");
+
+                string line = Console.ReadLine().Trim();
+
+                if (line == "`")
+                {
+                    EditSchool(schoolToEdit, schoolRepository, id);
+                    return;
+                }
+
+                switch (line)
+                {
+                    case "1":
+                        AddTeacher(schoolToEdit, schoolRepository, id);
+                        break;
+
+                    default:
+                        Console.WriteLine("Incorrect Number!");
+                        Console.WriteLine("Click Enter...");
+                        Console.ReadLine();
+                        EditSchoolTeachers(schoolToEdit, schoolRepository, id);
+                        return;
+                }
+            }
+        }
+
+        private static void DeleteTeacher(School schoolToEdit, SchoolRepository schoolRepository, int id, int index)
+        {
+            List<Teacher> teachers = schoolToEdit.TeachersStaff.ToList();
+
+            teachers.RemoveAt(index);
+
+            schoolToEdit.TeachersStaff = teachers;
+
+            schoolRepository.Save(schoolToEdit);
+
+            EditSchoolTeachers(schoolToEdit, schoolRepository, id);
+            return;
+        }
+
+        private static void SelectTeacherFromStaff(School schoolToEdit, SchoolRepository schoolRepository, int id, int index)
+        {
+            Console.Clear();
+
+            Teacher teacher = schoolToEdit.TeachersStaff.ToList()[index];
+
+            Console.WriteLine($"=== {schoolToEdit.Name}'s Teacher ===");
+
+            Console.WriteLine($" 1.{teacher.FirstName} {teacher.MiddleName} {teacher.LastName}");
+
+            Console.WriteLine($" 2.Phone number: {teacher.PhoneNumber}");
+
+            Console.WriteLine($" 3.Salary: {teacher.Salary}");
+
+            Console.WriteLine($" 4.Gender: {teacher.Gender}");
+
+            Console.WriteLine($" 5.Identity number: {teacher.IdentityNumber}");
+
+            Console.WriteLine($" 6.Birth date: {teacher.BirthDate}");
+
+            Console.WriteLine($" 7.Specialized Subjects:");
+            foreach (Subject subject in teacher.SpecializedSubjects)
+            {
+                Console.WriteLine($" -{subject.Name} lessons count: {subject.LessonsCount}");
+            }
+
+            Console.WriteLine("\nEnter the number of the component to edit or '`' to return:");
+
+            string line = Console.ReadLine();
+
+            if (line == "`")
+            {
+                EditSchoolTeachers(schoolToEdit, schoolRepository, id);
+                return;
+            }
+
+            switch (line)
+            {
+                case "1":
+                    ChangeTeacherName(schoolToEdit, schoolRepository, id, index);
+                    break;
+
+                case "2":
+                    ChangeTeacherPhoneNumber(schoolToEdit, schoolRepository, id, index);
+                    break;
+
+                case "3":
+                    ChangeTeacherSalary(schoolToEdit, schoolRepository, id, index);
+                    break;
+
+                case "4":
+                    ChangeTeacherGender(schoolToEdit, schoolRepository, id, index);
+                    break;
+
+                case "5":
+                    ChangeTeacherIdentityNumber(schoolToEdit, schoolRepository, id, index);
+                    break;
+
+                case "6":
+                    ChangeTeacherBirthDate(schoolToEdit, schoolRepository, id, index);
+                    break;
+
+                case "7":
+                    break;
+
+                default:
+                    Console.WriteLine("\nIncorrect Component Number!");
+
+                    Console.WriteLine("Click Enter...");
+
+                    Console.ReadLine();
+
+                    SelectTeacherFromStaff(schoolToEdit, schoolRepository, id, index);
+
+                    return;
+            }
+        }
+
+        private static void ChangeTeacherBirthDate(School schoolToEdit, SchoolRepository schoolRepository, int id, int index)
+        {
+            Console.Clear();
+
+            Console.WriteLine($"Current Birth Date: {schoolToEdit.TeachersStaff.ToList()[index].BirthDate.Date}");
+
+            Console.WriteLine($" 1.Day {schoolToEdit.TeachersStaff.ToList()[index].BirthDate.Day}");
+
+            Console.WriteLine($" 2.Month {schoolToEdit.TeachersStaff.ToList()[index].BirthDate.Month}");
+
+            Console.WriteLine($" 3.Year {schoolToEdit.TeachersStaff.ToList()[index].BirthDate.Year}");
+
+
+            Console.WriteLine("To edit component select the number of the component:");
+
+            Console.WriteLine("\nEnter number or '`' to return:");
+
+            string line = Console.ReadLine().Trim();
+
+            if (line == "`")
+            {
+                SelectTeacherFromStaff(schoolToEdit, schoolRepository, id, index);
+                return;
+            }
+
+            switch (line)
+            {
+                case "1":
+                    Console.WriteLine("\nEnter new Day or '`' to return");
+
+                    line = Console.ReadLine().Trim();
+
+                    if (line == "`")
+                    {
+                        ChangeTeacherBirthDate(schoolToEdit, schoolRepository, id, index);
+                        return;
+                    }
+                    else
+                    {
+                        int day;
+                        while (!int.TryParse(line, out day) || !(day < 31 && day > 0))
+                        {
+                            Console.WriteLine("Incorrect Day!");
+
+                            Console.WriteLine("\nEnter new Day or '`' to return");
+
+                            line = Console.ReadLine();
+
+                            if (line == "`")
+                            {
+                                ChangeTeacherBirthDate(schoolToEdit, schoolRepository, id, index);
+                                return;
+                            }
+                        }
+                        day = int.Parse(line);
+
+                        int month = schoolToEdit.TeachersStaff.ToList()[index].BirthDate.Month;
+
+                        int year = schoolToEdit.TeachersStaff.ToList()[index].BirthDate.Year;
+
+                        schoolToEdit.TeachersStaff.ToList()[index].BirthDate = new DateTime(year, month, day);
+
+                        schoolRepository.Save(schoolToEdit);
+
+                        ChangeTeacherBirthDate(schoolToEdit, schoolRepository, id, index);
+                        return;
+                    }
+                    break;
+
+                case "2":
+                    Console.WriteLine("\nEnter new Month or '`' to return");
+
+                    line = Console.ReadLine().Trim();
+
+                    if (line == "`")
+                    {
+                        ChangeTeacherBirthDate(schoolToEdit, schoolRepository, id, index);
+                        return;
+                    }
+                    else
+                    {
+                        int month;
+                        while (!int.TryParse(line, out month) || !(month < 13 && month > 0))
+                        {
+                            Console.WriteLine("Incorrect Month!");
+
+                            Console.WriteLine("\nEnter new Month or '`' to return");
+
+                            line = Console.ReadLine();
+
+                            if (line == "`")
+                            {
+                                ChangeTeacherBirthDate(schoolToEdit, schoolRepository, id, index);
+                                return;
+                            }
+                        }
+                        month = int.Parse(line);
+
+                        int day = schoolToEdit.TeachersStaff.ToList()[index].BirthDate.Day;
+
+                        int year = schoolToEdit.TeachersStaff.ToList()[index].BirthDate.Year;
+
+                        schoolToEdit.TeachersStaff.ToList()[index].BirthDate = new DateTime(year, month, day);
+
+                        schoolRepository.Save(schoolToEdit);
+
+                        ChangeTeacherBirthDate(schoolToEdit, schoolRepository, id, index);
+                        return;
+                    }
+                    break;
+
+                case "3":
+                    Console.WriteLine("\nEnter new Year or '`' to return");
+
+                    line = Console.ReadLine().Trim();
+
+                    if (line == "`")
+                    {
+                        ChangeTeacherBirthDate(schoolToEdit, schoolRepository, id, index);
+                        return;
+                    }
+                    else
+                    {
+                        int year;
+                        while (!int.TryParse(line, out year) || !(year < 3000 && year > 1500))
+                        {
+                            Console.WriteLine("Incorrect Year!");
+
+                            Console.WriteLine("\nEnter new Year or '`' to return");
+
+                            line = Console.ReadLine();
+
+                            if (line == "`")
+                            {
+                                ChangeTeacherBirthDate(schoolToEdit, schoolRepository, id, index);
+                                return;
+                            }
+                        }
+                        year = int.Parse(line);
+
+                        int month = schoolToEdit.TeachersStaff.ToList()[index].BirthDate.Month;
+
+                        int day = schoolToEdit.TeachersStaff.ToList()[index].BirthDate.Day;
+
+                        schoolToEdit.ViseDirectors.ToList()[index].BirthDate = new DateTime(year, month, day);
+
+                        schoolRepository.Save(schoolToEdit);
+
+                        ChangeTeacherBirthDate(schoolToEdit, schoolRepository, id, index);
+                        return;
+                    }
+                    break;
+                default:
+                    if (line == "`")
+                    {
+                        SelectTeacherFromStaff(schoolToEdit, schoolRepository, id, index);
+                        return;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Incorrect number!");
+
+                        Console.WriteLine("\nClick Enter...");
+
+                        Console.ReadLine();
+
+                        ChangeTeacherBirthDate(schoolToEdit, schoolRepository, id, index);
+                        return;
+                    }
+                    break;
+            }
+        }
+
+        private static void ChangeTeacherIdentityNumber(School schoolToEdit, SchoolRepository schoolRepository, int id, int index)
+        {
+            Console.Clear();
+
+            Console.WriteLine($"Current Identity Number: {schoolToEdit.TeachersStaff.ToList()[index].IdentityNumber}");
+
+            Console.WriteLine("\nEnter new Identity Number or '`' to return:");
+
+            string line = Console.ReadLine().Trim();
+
+            if (line == "`")
+            {
+                SelectTeacherFromStaff(schoolToEdit, schoolRepository, id, index);
+                return;
+            }
+            else
+            {
+                while (!int.TryParse(line, out int number) || line.Length != 10)
+                {
+                    Console.WriteLine("Invalid Identity Number!");
+
+                    Console.WriteLine("\nEnter new Identity Number or '`' to return:");
+
+                    line = Console.ReadLine();
+
+                    if (line == "`")
+                    {
+                        SelectTeacherFromStaff(schoolToEdit, schoolRepository, id, index);
+                        return;
+                    }
+                }
+                schoolToEdit.TeachersStaff.ToList()[index].IdentityNumber = line;
+
+                schoolRepository.Save(schoolToEdit);
+
+                SelectTeacherFromStaff(schoolToEdit, schoolRepository, id, index);
+                return;
+            }
+        }
+
+        private static void ChangeTeacherGender(School schoolToEdit, SchoolRepository schoolRepository, int id, int index)
+        {
+            Console.Clear();
+
+            Console.WriteLine($"Current Gender: {schoolToEdit.TeachersStaff.ToList()[index].Gender}");
+
+            Console.WriteLine("\nEnter Male or Female or '`' to return:");
+
+            string line = Console.ReadLine().Trim().ToLower();
+
+            if (line == "`")
+            {
+                SelectTeacherFromStaff(schoolToEdit, schoolRepository, id, index);
+                return;
+            }
+            else
+            {
+                switch (line)
+                {
+                    case "male":
+                        schoolToEdit.TeachersStaff.ToList()[index].Gender = Gender.Male;
+
+                        schoolRepository.Save(schoolToEdit);
+
+                        SelectTeacherFromStaff(schoolToEdit, schoolRepository, id, index);
+                        return;
+                        break;
+
+                    case "female":
+                        schoolToEdit.TeachersStaff.ToList()[index].Gender = Gender.Female;
+
+                        schoolRepository.Save(schoolToEdit);
+
+                        SelectTeacherFromStaff(schoolToEdit, schoolRepository, id, index);
+                        return;
+                        break;
+
+                    default:
+                        Console.WriteLine("Incorrect Gender!");
+
+                        Console.WriteLine("\nClick Enter to continue...");
+
+                        Console.ReadLine();
+
+                        ChangeTeacherGender(schoolToEdit, schoolRepository, id, index);
+                        return;
+                }
+            }
+        }
+
+        private static void ChangeTeacherSalary(School schoolToEdit, SchoolRepository schoolRepository, int id, int index)
+        {
+            Console.Clear();
+
+            Console.WriteLine($"Current Salary: {schoolToEdit.TeachersStaff.ToList()[index].Salary}");
+
+            Console.WriteLine("\nEnter new Salary or '`' to return:");
+
+            string line = Console.ReadLine().Trim();
+
+            int salary;
+
+            if (line == "`")
+            {
+                SelectTeacherFromStaff(schoolToEdit, schoolRepository, id, index);
+                return;
+            }
+            else
+            {
+                while (!int.TryParse(line, out salary) || line == "" || salary <= 0)
+                {
+                    Console.WriteLine("Incorrect Salary!");
+
+                    Console.WriteLine("\nEnter new Salary or '`' to return:");
+                    line = Console.ReadLine();
+
+                    if (line == "`")
+                    {
+                        SelectTeacherFromStaff(schoolToEdit, schoolRepository, id, index);
+                        return;
+                    }
+                }
+
+                salary = int.Parse(line);
+
+                schoolToEdit.TeachersStaff.ToList()[index].Salary = salary;
+
+                schoolRepository.Save(schoolToEdit);
+
+                SelectTeacherFromStaff(schoolToEdit, schoolRepository, id, index);
+                return;
+            }
+        }
+
+        private static void ChangeTeacherPhoneNumber(School schoolToEdit, SchoolRepository schoolRepository, int id, int index)
+        {
+            Console.Clear();
+
+            Console.WriteLine($"Current Teacher Phone Number: {schoolToEdit.TeachersStaff.ToList()[index].PhoneNumber}");
+
+            Console.WriteLine("\nEnter new Phone Number or '`' to return:");
+
+            string line = Console.ReadLine().Trim();
+
+            if (line == "`")
+            {
+                SelectTeacherFromStaff(schoolToEdit, schoolRepository, id, index);
+                return;
+            }
+            else
+            {
+                while (!int.TryParse(line, out _) || line.Length != 10)
+                {
+                    Console.WriteLine("Incorrect Phone Number!");
+
+                    Console.WriteLine("\nEnter new Phone Number or '`' to return:");
+                    line = Console.ReadLine();
+                    if (line == "`")
+                    {
+                        SelectTeacherFromStaff(schoolToEdit, schoolRepository, id, index);
+                        return;
+                    }
+                }
+
+                schoolToEdit.TeachersStaff.ToList()[index].PhoneNumber = line;
+
+                schoolRepository.Save(schoolToEdit);
+
+                SelectTeacherFromStaff(schoolToEdit, schoolRepository, id, index);
+            }
+        }
+
+        private static void ChangeTeacherName(School schoolToEdit, SchoolRepository schoolRepository, int id, int index)
+        {
+            Console.Clear();
+
+            Console.WriteLine($"Current Teacher's Name: {schoolToEdit.TeachersStaff.ToList()[index].FirstName} {schoolToEdit.TeachersStaff.ToList()[index].MiddleName} {schoolToEdit.TeachersStaff.ToList()[index].LastName}");
+
+            Console.WriteLine("\nEnter new First Name:");
+
+            string line = Console.ReadLine().Trim();
+
+            while (int.TryParse(line, out _))
+            {
+                Console.WriteLine("Incorrect Name!");
+                Console.WriteLine("\nEnter new First Name:");
+                line = Console.ReadLine().Trim();
+            }
+
+            schoolToEdit.TeachersStaff.ToList()[index].FirstName = line;
+
+            Console.WriteLine("\nEnter new Middle Name:");
+
+            line = Console.ReadLine().Trim();
+
+            while (int.TryParse(line, out _))
+            {
+                Console.WriteLine("Incorrect Name!");
+                Console.WriteLine("\nEnter new Middle Name:");
+                line = Console.ReadLine().Trim();
+            }
+
+            schoolToEdit.TeachersStaff.ToList()[index].MiddleName = line;
+
+            Console.WriteLine("\nEnter new Last Name:");
+
+            line = Console.ReadLine().Trim();
+
+            while (int.TryParse(line, out _))
+            {
+                Console.WriteLine("Incorrect Name!");
+                Console.WriteLine("\nEnter new Last Name:");
+                line = Console.ReadLine().Trim();
+            }
+
+            schoolToEdit.TeachersStaff.ToList()[index].LastName = line;
+
+            schoolRepository.Save(schoolToEdit);
+
+            SelectTeacherFromStaff(schoolToEdit, schoolRepository, id, index);
+            return;
+        }
+
+        private static void AddTeacher(School schoolToEdit, SchoolRepository schoolRepository, int id)
+        {
+            Console.Clear();
+
+            Console.WriteLine("Create new Teacher:");
+
+            Teacher teacher = SelectTeacher();
+
+            List<Teacher> teachers = schoolToEdit.TeachersStaff.ToList();
+
+            teachers.Add(teacher);
+
+            schoolToEdit.TeachersStaff = teachers;
+
+            schoolRepository.Save(schoolToEdit);
+
+            EditSchoolTeachers(schoolToEdit, schoolRepository, id);
+
+            return;
         }
 
         private static void EditSchoolViseDirectors(School schoolToEdit, SchoolRepository schoolRepository, int id)
@@ -459,7 +1118,6 @@
 
         private static void DeleteViseDirector(School schoolToEdit, SchoolRepository schoolRepository, int id, int index)
         {
-
             List<Teacher> viseDirectors = schoolToEdit.ViseDirectors.ToList();
 
             viseDirectors.RemoveAt(index);
@@ -539,9 +1197,8 @@
 
                     return;
             }
-
-            Console.ReadLine();
         }
+
 
         private static void ChangeViseDirectorBirthDate(School schoolToEdit, SchoolRepository schoolRepository, int id, int index)
         {
@@ -683,9 +1340,9 @@
                         }
                         year = int.Parse(line);
 
-                        int month = schoolToEdit.Director.BirthDate.Month;
+                        int month = schoolToEdit.ViseDirectors.ToList()[index].BirthDate.Month;
 
-                        int day = schoolToEdit.Director.BirthDate.Day;
+                        int day = schoolToEdit.ViseDirectors.ToList()[index].BirthDate.Day;
 
                         schoolToEdit.ViseDirectors.ToList()[index].BirthDate = new DateTime(year, month, day);
 
@@ -752,6 +1409,7 @@
                 schoolRepository.Save(schoolToEdit);
 
                 SelectViseDirector(schoolToEdit, schoolRepository, id, index);
+                return;
             }
         }
 
@@ -780,6 +1438,7 @@
                         schoolRepository.Save(schoolToEdit);
 
                         SelectViseDirector(schoolToEdit, schoolRepository, id, index);
+                        return;
                         break;
 
                     case "female":
@@ -788,6 +1447,7 @@
                         schoolRepository.Save(schoolToEdit);
 
                         SelectViseDirector(schoolToEdit, schoolRepository, id, index);
+                        return;
                         break;
 
                     default:
@@ -843,6 +1503,7 @@
                 schoolRepository.Save(schoolToEdit);
 
                 SelectViseDirector(schoolToEdit, schoolRepository, id, index);
+                return;
             }
         }
 
@@ -932,6 +1593,7 @@
             schoolRepository.Save(schoolToEdit);
 
             SelectViseDirector(schoolToEdit, schoolRepository, id, index);
+            return;
         }
 
         private static void AddViseDirector(School schoolToEdit, SchoolRepository schoolRepository, int id)
