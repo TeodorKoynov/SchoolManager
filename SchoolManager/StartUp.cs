@@ -151,10 +151,15 @@
                 Console.WriteLine($"------->Id= {school.Id} Name: {school.Name}");
             }
 
-            Console.WriteLine("\nSelect a School Id:");
+            Console.WriteLine("\nSelect a School Id or enter '`' to retun:");
 
             string line = Console.ReadLine().Trim();
-            
+
+            if (line == "`")
+            {
+                return;
+            }
+
             int id = 0;
 
             while (!int.TryParse(line, out id) || (schoolRepository.Find(id) == null))
@@ -255,7 +260,7 @@
                 Console.WriteLine(" ----------- Empty ------------");
             }
 
-            Console.WriteLine("\nTo edit enter component number:");
+            Console.WriteLine("\nTo edit enter component number or '`' to return:");
             string line = Console.ReadLine().Trim().ToLower();
 
             if (line == "`")
@@ -292,6 +297,14 @@
 
                         break;
                     default:
+                        Console.WriteLine("Incorrect component number!");
+
+                        Console.WriteLine("Click Enter...");
+
+                        Console.ReadLine();
+
+                        EditSchool(schoolToEdit, schoolRepository, id);
+                        return;
                         break;
                 }
             }
@@ -398,9 +411,15 @@
 
             Console.WriteLine($" 6.Birth date: {schoolToEdit.Director.BirthDate}");
 
-            Console.WriteLine("\nEnter the number of the component to edit:");
+            Console.WriteLine("\nEnter the number of the component to edit or '`' to return:");
 
             string line = Console.ReadLine();
+
+            if (line == "`")
+            {
+                EditSchool(schoolToEdit, schoolRepository, id);
+                return;
+            }
 
             switch (line)
             {
@@ -426,6 +445,8 @@
                     ChangeDirectorBirthDate(schoolToEdit, schoolRepository, id);
                     break;
                 default:
+                    EditSchool(schoolToEdit, schoolRepository, id);
+                    return;
                     break;
             }
         }
