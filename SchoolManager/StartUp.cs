@@ -305,7 +305,6 @@
 
                         EditSchool(schoolToEdit, schoolRepository, id);
                         return;
-                        break;
                 }
             }
         }
@@ -318,14 +317,17 @@
 
             if (schoolToEdit.ViseDirectors.Count() != 0)
             {
+                int count = 0;
                 foreach (Teacher viseDirector in schoolToEdit.ViseDirectors)
                 {
-                    Console.WriteLine($" - {viseDirector}");
+                    count++;
+                    Console.WriteLine($"{count} - {viseDirector}");
                 }
 
                 Console.WriteLine("\n=== Available operation ===");
                 Console.WriteLine("  1.Add new Vise Director");
-                Console.WriteLine("  2.Edit Vise Director");
+                Console.WriteLine("  2.Select Vise Director");
+                Console.WriteLine("  3.Delete Vise Director");
 
                 Console.WriteLine("\nEnter a number of the wish operation or '`' to return:");
                 
@@ -343,15 +345,83 @@
                         break;
 
                     case "2":
+                        Console.WriteLine("\nEnter Vise Director Number or '`' to return:");
+
+                        string newLine = Console.ReadLine().Trim();
+                        
+                        if (newLine == "`")
+                        {
+                            EditSchoolViseDirectors(schoolToEdit, schoolRepository, id);
+                            return;
+                        }
+
+                        int number;
+
+                        while (!int.TryParse(newLine, out number) || !(number > 0 && number <= schoolToEdit.ViseDirectors.Count()))
+                        {
+                            Console.WriteLine("Incorrect Vise Director Number!");
+
+                            Console.WriteLine("\nEnter Vise Director Number or '`' to return:");
+
+                            newLine = Console.ReadLine().Trim();
+
+                            if (newLine == "`")
+                            {
+                                EditSchoolViseDirectors(schoolToEdit, schoolRepository, id);
+                                return;
+                            }
+                        }
+
+                        number = int.Parse(newLine);
+
+                        int index = number - 1;
+
+                        SelectViseDirector(schoolToEdit, schoolRepository, id, index);
+                        break;
+
+                    case "3":
+                        Console.WriteLine("\nEnter Vise Director Number or '`' to return:");
+
+                        newLine = Console.ReadLine().Trim();
+
+                        if (newLine == "`")
+                        {
+                            EditSchoolViseDirectors(schoolToEdit, schoolRepository, id);
+                            return;
+                        }
+
+                        while (!int.TryParse(newLine, out number) || !(number > 0 && number <= schoolToEdit.ViseDirectors.Count()))
+                        {
+                            Console.WriteLine("Incorrect Vise Director Number!");
+
+                            Console.WriteLine("\nEnter Vise Director Number or '`' to return");
+
+                            newLine = Console.ReadLine().Trim();
+
+                            if (newLine == "`")
+                            {
+                                EditSchoolViseDirectors(schoolToEdit, schoolRepository, id);
+                                return;
+                            }
+
+                        }
+
+                        number = int.Parse(newLine);
+
+                        index = number - 1;
+
+                        DeleteViseDirector(schoolToEdit, schoolRepository, id, index);
                         break;
                     
                     default:
-                        Console.WriteLine("Incorrect Number!");
+                        Console.WriteLine("\nIncorrect Number!");
+
                         Console.WriteLine("Click Enter...");
+
                         Console.ReadLine();
+
                         EditSchoolViseDirectors(schoolToEdit, schoolRepository, id);
                         return;
-                        break;
                 }
             }
             else
@@ -383,14 +453,506 @@
                         Console.ReadLine();
                         EditSchoolViseDirectors(schoolToEdit, schoolRepository, id);
                         return;
-                        break;
                 }
             }
         }
 
-        private static void AddViseDirector(School schoolToEdit, SchoolRepository schoolRepository, int id)
+        private static void DeleteViseDirector(School schoolToEdit, SchoolRepository schoolRepository, int id, int index)
         {
 
+            List<Teacher> viseDirectors = schoolToEdit.ViseDirectors.ToList();
+
+            viseDirectors.RemoveAt(index);
+
+            schoolToEdit.ViseDirectors = viseDirectors;
+
+            schoolRepository.Save(schoolToEdit);
+
+            EditSchoolViseDirectors(schoolToEdit, schoolRepository, id);
+            return;
+        }
+
+        private static void SelectViseDirector(School schoolToEdit, SchoolRepository schoolRepository, int id, int index)
+        {
+            Console.Clear();
+
+            Teacher viseDirector = schoolToEdit.ViseDirectors.ToList()[index];
+
+            Console.WriteLine($"=== {schoolToEdit.Name}'s Vise Director ===");
+
+            Console.WriteLine($" 1.{viseDirector.FirstName} {viseDirector.MiddleName} {viseDirector.LastName}");
+
+            Console.WriteLine($" 2.Phone number: {viseDirector.PhoneNumber}");
+
+            Console.WriteLine($" 3.Salary: {viseDirector.Salary}");
+
+            Console.WriteLine($" 4.Gender: {viseDirector.Gender}");
+
+            Console.WriteLine($" 5.Identity number: {viseDirector.IdentityNumber}");
+
+            Console.WriteLine($" 6.Birth date: {viseDirector.BirthDate}");
+
+            Console.WriteLine("\nEnter the number of the component to edit or '`' to return:");
+
+            string line = Console.ReadLine();
+
+            if (line == "`")
+            {
+                EditSchoolViseDirectors(schoolToEdit, schoolRepository, id);
+                return;
+            }
+
+            switch (line)
+            {
+                case "1":
+                    ChangeViseDirectorName(schoolToEdit, schoolRepository, id, index);
+                    break;
+
+                case "2":
+                    ChangeViseDirectorPhoneNumber(schoolToEdit, schoolRepository, id, index);
+                    break;
+
+                case "3":
+                    ChangeViseDirectorSalary(schoolToEdit, schoolRepository, id, index);
+                    break;
+
+                case "4":
+                    ChangeViseDirectorGender(schoolToEdit, schoolRepository, id, index);
+                    break;
+
+                case "5":
+                    ChangeViseDirectorIdentityNumber(schoolToEdit, schoolRepository, id, index);
+                    break;
+
+                case "6":
+                    ChangeViseDirectorBirthDate(schoolToEdit, schoolRepository, id, index);
+                    break;
+        
+                default:
+                    Console.WriteLine("\nIncorrect Component Number!");
+
+                    Console.WriteLine("Click Enter...");
+
+                    Console.ReadLine();
+
+                    SelectViseDirector(schoolToEdit, schoolRepository, id, index);
+
+                    return;
+            }
+
+            Console.ReadLine();
+        }
+
+        private static void ChangeViseDirectorBirthDate(School schoolToEdit, SchoolRepository schoolRepository, int id, int index)
+        {
+            Console.Clear();
+
+            Console.WriteLine($"Current Birth Date: {schoolToEdit.ViseDirectors.ToList()[index].BirthDate.Date}");
+
+            Console.WriteLine($" 1.Day {schoolToEdit.ViseDirectors.ToList()[index].BirthDate.Day}");
+
+            Console.WriteLine($" 2.Month {schoolToEdit.ViseDirectors.ToList()[index].BirthDate.Month}");
+
+            Console.WriteLine($" 3.Year {schoolToEdit.ViseDirectors.ToList()[index].BirthDate.Year}");
+
+
+            Console.WriteLine("To edit component select the number of the component:");
+
+            Console.WriteLine("\nEnter number or '`' to return:");
+
+            string line = Console.ReadLine().Trim();
+
+            if (line == "`")
+            {
+                SelectViseDirector(schoolToEdit, schoolRepository, id, index);
+                return;
+            }
+
+            switch (line)
+            {
+                case "1":
+                    Console.WriteLine("\nEnter new Day or '`' to return");
+
+                    line = Console.ReadLine().Trim();
+
+                    if (line == "`")
+                    {
+                        ChangeViseDirectorBirthDate(schoolToEdit, schoolRepository, id, index);
+                        return;
+                    }
+                    else
+                    {
+                        int day;
+                        while (!int.TryParse(line, out day) || !(day < 31 && day > 0))
+                        {
+                            Console.WriteLine("Incorrect Day!");
+
+                            Console.WriteLine("\nEnter new Day or '`' to return");
+
+                            line = Console.ReadLine();
+
+                            if (line == "`")
+                            {
+                                ChangeViseDirectorBirthDate(schoolToEdit, schoolRepository, id, index);
+                                return;
+                            }
+                        }
+                        day = int.Parse(line);
+
+                        int month = schoolToEdit.ViseDirectors.ToList()[index].BirthDate.Month;
+
+                        int year = schoolToEdit.ViseDirectors.ToList()[index].BirthDate.Year;
+
+                        schoolToEdit.ViseDirectors.ToList()[index].BirthDate = new DateTime(year, month, day);
+
+                        schoolRepository.Save(schoolToEdit);
+
+                        ChangeViseDirectorBirthDate(schoolToEdit, schoolRepository, id, index);
+                        return;
+                    }
+                    break;
+
+                case "2":
+                    Console.WriteLine("\nEnter new Month or '`' to return");
+
+                    line = Console.ReadLine().Trim();
+
+                    if (line == "`")
+                    {
+                        ChangeViseDirectorBirthDate(schoolToEdit, schoolRepository, id, index);
+                        return;
+                    }
+                    else
+                    {
+                        int month;
+                        while (!int.TryParse(line, out month) || !(month < 13 && month > 0))
+                        {
+                            Console.WriteLine("Incorrect Month!");
+
+                            Console.WriteLine("\nEnter new Month or '`' to return");
+
+                            line = Console.ReadLine();
+
+                            if (line == "`")
+                            {
+                                ChangeViseDirectorBirthDate(schoolToEdit, schoolRepository, id, index);
+                                return;
+                            }
+                        }
+                        month = int.Parse(line);
+
+                        int day = schoolToEdit.ViseDirectors.ToList()[index].BirthDate.Day;
+
+                        int year = schoolToEdit.ViseDirectors.ToList()[index].BirthDate.Year;
+
+                        schoolToEdit.ViseDirectors.ToList()[index].BirthDate = new DateTime(year, month, day);
+
+                        schoolRepository.Save(schoolToEdit);
+
+                        ChangeViseDirectorBirthDate(schoolToEdit, schoolRepository, id, index);
+                        return;
+                    }
+                    break;
+
+                case "3":
+                    Console.WriteLine("\nEnter new Year or '`' to return");
+
+                    line = Console.ReadLine().Trim();
+
+                    if (line == "`")
+                    {
+                        ChangeViseDirectorBirthDate(schoolToEdit, schoolRepository, id, index);
+                        return;
+                    }
+                    else
+                    {
+                        int year;
+                        while (!int.TryParse(line, out year) || !(year < 3000 && year > 1500))
+                        {
+                            Console.WriteLine("Incorrect Year!");
+
+                            Console.WriteLine("\nEnter new Year or '`' to return");
+
+                            line = Console.ReadLine();
+
+                            if (line == "`")
+                            {
+                                ChangeViseDirectorBirthDate(schoolToEdit, schoolRepository, id, index);
+                                return;
+                            }
+                        }
+                        year = int.Parse(line);
+
+                        int month = schoolToEdit.Director.BirthDate.Month;
+
+                        int day = schoolToEdit.Director.BirthDate.Day;
+
+                        schoolToEdit.ViseDirectors.ToList()[index].BirthDate = new DateTime(year, month, day);
+
+                        schoolRepository.Save(schoolToEdit);
+
+                        ChangeViseDirectorBirthDate(schoolToEdit, schoolRepository, id, index);
+                        return;
+                    }
+                    break;
+                default:
+                    if (line == "`")
+                    {
+                        SelectViseDirector(schoolToEdit, schoolRepository, id, index);
+                        return;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Incorrect number!");
+
+                        Console.WriteLine("\nClick Enter...");
+
+                        Console.ReadLine();
+
+                        ChangeViseDirectorBirthDate(schoolToEdit, schoolRepository, id, index);
+                        return;
+                    }
+                    break;
+            }
+        }
+        
+        private static void ChangeViseDirectorIdentityNumber(School schoolToEdit, SchoolRepository schoolRepository, int id, int index)
+        {
+            Console.Clear();
+
+            Console.WriteLine($"Current Identity Number: {schoolToEdit.ViseDirectors.ToList()[index].IdentityNumber}");
+
+            Console.WriteLine("\nEnter new Identity Number or '`' to return:");
+
+            string line = Console.ReadLine().Trim();
+
+            if (line == "`")
+            {
+                SelectViseDirector(schoolToEdit, schoolRepository, id, index);
+                return;
+            }
+            else
+            {
+                while (!int.TryParse(line, out _) || line.Length != 10)
+                {
+                    Console.WriteLine("Invalid Identity Number!");
+
+                    Console.WriteLine("\nEnter new Identity Number or '`' to return:");
+
+                    line = Console.ReadLine();
+
+                    if (line == "`")
+                    {
+                        SelectViseDirector(schoolToEdit, schoolRepository, id, index);
+                        return;
+                    }
+                }
+                schoolToEdit.ViseDirectors.ToList()[index].IdentityNumber = line;
+
+                schoolRepository.Save(schoolToEdit);
+
+                SelectViseDirector(schoolToEdit, schoolRepository, id, index);
+            }
+        }
+
+        private static void ChangeViseDirectorGender(School schoolToEdit, SchoolRepository schoolRepository, int id, int index)
+        {
+            Console.Clear();
+
+            Console.WriteLine($"Current Gender: {schoolToEdit.ViseDirectors.ToList()[index].Gender}");
+
+            Console.WriteLine("\nEnter Male or Female or '`' to return:");
+
+            string line = Console.ReadLine().Trim().ToLower();
+
+            if (line == "`")
+            {
+                SelectViseDirector(schoolToEdit, schoolRepository, id, index);
+                return;
+            }
+            else
+            {
+                switch (line)
+                {
+                    case "male":
+                        schoolToEdit.ViseDirectors.ToList()[index].Gender = Gender.Male;
+
+                        schoolRepository.Save(schoolToEdit);
+
+                        SelectViseDirector(schoolToEdit, schoolRepository, id, index);
+                        break;
+
+                    case "female":
+                        schoolToEdit.ViseDirectors.ToList()[index].Gender = Gender.Female;
+
+                        schoolRepository.Save(schoolToEdit);
+
+                        SelectViseDirector(schoolToEdit, schoolRepository, id, index);
+                        break;
+
+                    default:
+                        Console.WriteLine("Incorrect Gender!");
+
+                        Console.WriteLine("\nClick Enter to continue...");
+
+                        Console.ReadLine();
+
+                        ChangeViseDirectorGender(schoolToEdit, schoolRepository, id, index);
+                        return;
+                }
+            }
+        }
+
+        private static void ChangeViseDirectorSalary(School schoolToEdit, SchoolRepository schoolRepository, int id, int index)
+        {
+            Console.Clear();
+
+            Console.WriteLine($"Current Salary: {schoolToEdit.ViseDirectors.ToList()[index].Salary}");
+
+            Console.WriteLine("\nEnter new Salary or '`' to return:");
+
+            string line = Console.ReadLine().Trim();
+
+            int salary;
+
+            if (line == "`")
+            {
+                SelectViseDirector(schoolToEdit, schoolRepository, id, index);
+                return;
+            }
+            else
+            {
+                while (!int.TryParse(line, out salary) || line == "" || salary <= 0)
+                {
+                    Console.WriteLine("Incorrect Salary!");
+
+                    Console.WriteLine("\nEnter new Salary or '`' to return:");
+                    line = Console.ReadLine();
+
+                    if (line == "`")
+                    {
+                        SelectViseDirector(schoolToEdit, schoolRepository, id, index);
+                        return;
+                    }
+                }
+
+                salary = int.Parse(line);
+
+                schoolToEdit.ViseDirectors.ToList()[index].Salary = salary;
+
+                schoolRepository.Save(schoolToEdit);
+
+                SelectViseDirector(schoolToEdit, schoolRepository, id, index);
+            }
+        }
+
+        private static void ChangeViseDirectorPhoneNumber(School schoolToEdit, SchoolRepository schoolRepository, int id, int index)
+        {
+            Console.Clear();
+
+            Console.WriteLine($"Current Vise Director Phone Number: {schoolToEdit.ViseDirectors.ToList()[index].PhoneNumber}");
+
+            Console.WriteLine("\nEnter new Phone Number or '`' to return:");
+
+            string line = Console.ReadLine().Trim();
+
+            if (line == "`")
+            {
+                SelectViseDirector(schoolToEdit, schoolRepository, id, index);
+                return;
+            }
+            else
+            {
+                while (!int.TryParse(line, out _) || line.Length != 10)
+                {
+                    Console.WriteLine("Incorrect Phone Number!");
+
+                    Console.WriteLine("\nEnter new Phone Number or '`' to return:");
+                    line = Console.ReadLine();
+                    if (line == "`")
+                    {
+                        SelectViseDirector(schoolToEdit, schoolRepository, id, index);
+                        return;
+                    }
+                }
+
+                schoolToEdit.ViseDirectors.ToList()[index].PhoneNumber = line;
+
+                schoolRepository.Save(schoolToEdit);
+
+                SelectViseDirector(schoolToEdit, schoolRepository, id, index);
+            }
+        }
+
+        private static void ChangeViseDirectorName(School schoolToEdit, SchoolRepository schoolRepository, int id, int index)
+        {
+            Console.Clear();
+
+            Console.WriteLine($"Current Vise Director's Name: {schoolToEdit.ViseDirectors.ToList()[index].FirstName} {schoolToEdit.ViseDirectors.ToList()[index].MiddleName} {schoolToEdit.ViseDirectors.ToList()[index].LastName}");
+
+            Console.WriteLine("\nEnter new First Name:");
+
+            string line = Console.ReadLine().Trim();
+
+            while (int.TryParse(line, out _))
+            {
+                Console.WriteLine("Incorrect Name!");
+                Console.WriteLine("\nEnter new First Name:");
+                line = Console.ReadLine().Trim();
+            }
+
+            schoolToEdit.ViseDirectors.ToList()[index].FirstName = line;
+
+            Console.WriteLine("\nEnter new Middle Name:");
+
+            line = Console.ReadLine().Trim();
+
+            while (int.TryParse(line, out _))
+            {
+                Console.WriteLine("Incorrect Name!");
+                Console.WriteLine("\nEnter new Middle Name:");
+                line = Console.ReadLine().Trim();
+            }
+
+            schoolToEdit.ViseDirectors.ToList()[index].MiddleName = line;
+
+            Console.WriteLine("\nEnter new Last Name:");
+
+            line = Console.ReadLine().Trim();
+
+            while (int.TryParse(line, out _))
+            {
+                Console.WriteLine("Incorrect Name!");
+                Console.WriteLine("\nEnter new Last Name:");
+                line = Console.ReadLine().Trim();
+            }
+
+            schoolToEdit.ViseDirectors.ToList()[index].LastName = line;
+
+            schoolRepository.Save(schoolToEdit);
+
+            SelectViseDirector(schoolToEdit, schoolRepository, id, index);
+        }
+
+        private static void AddViseDirector(School schoolToEdit, SchoolRepository schoolRepository, int id)
+        {
+            Console.Clear();
+
+            Console.WriteLine("Create new Vise Director:");
+
+            Teacher viseDirector = SelectTeacher();
+
+            List<Teacher> viseDirectors = schoolToEdit.ViseDirectors.ToList();
+
+            viseDirectors.Add(viseDirector);
+
+            schoolToEdit.ViseDirectors = viseDirectors;
+
+            schoolRepository.Save(schoolToEdit);
+
+            EditSchoolViseDirectors(schoolToEdit, schoolRepository, id);
+            
+            return;
         }
 
         private static void EditSchoolDirector(School schoolToEdit, SchoolRepository schoolRepository, int id)
@@ -445,9 +1007,13 @@
                     ChangeDirectorBirthDate(schoolToEdit, schoolRepository, id);
                     break;
                 default:
-                    EditSchool(schoolToEdit, schoolRepository, id);
+                    Console.WriteLine("\nIncorrect Component Number!");
+                    Console.WriteLine("Click Enter...");
+
+                    Console.ReadLine();
+
+                    EditSchoolDirector(schoolToEdit, schoolRepository, id);
                     return;
-                    break;
             }
         }
 
@@ -516,6 +1082,7 @@
                         schoolRepository.Save(schoolToEdit);
 
                         ChangeDirectorBirthDate(schoolToEdit, schoolRepository, id);
+                        return;
                     }
                     break;
 
@@ -557,6 +1124,7 @@
                         schoolRepository.Save(schoolToEdit);
 
                         ChangeDirectorBirthDate(schoolToEdit, schoolRepository, id);
+                        return;
                     }
                     break;
 
@@ -598,12 +1166,14 @@
                         schoolRepository.Save(schoolToEdit);
 
                         ChangeDirectorBirthDate(schoolToEdit, schoolRepository, id);
+                        return;
                     }
                     break;
                 default:
                     if (line == "`")
                     {
                         EditSchoolDirector(schoolToEdit, schoolRepository, id);
+                        return;
                     }
                     else
                     {
@@ -614,6 +1184,7 @@
                         Console.ReadLine();
 
                         ChangeDirectorBirthDate(schoolToEdit, schoolRepository, id);
+                        return;
                     }
                     break;
             }
@@ -701,7 +1272,7 @@
                         Console.ReadLine();
 
                         ChangeDirectorGender(schoolToEdit, schoolRepository, id);
-                        break;
+                        return;
                 }
             }
         }
@@ -1002,6 +1573,49 @@
             Human human = new Human(firstName, middleName, lastName, gender, age, birthDate, identityNumber, phoneNumber);
 
             return human;
+        }
+
+        private static Teacher SelectTeacher()
+        {
+            Human human = SelectHuman();
+
+            int salary = SelectSalary();
+
+            Teacher teacher = new Teacher(human, new List<Subject>(), salary);
+
+            return teacher;
+        }
+
+        private static Subject SelectSubject()
+        {
+            Console.WriteLine("Enter Subject Name:");
+
+            string name = Console.ReadLine().Trim();
+
+            Console.WriteLine("Enter Subject Lessons Count:");
+
+            string line = Console.ReadLine().Trim();
+
+            int count;
+            while (!int.TryParse(line, out count))
+            {
+                Console.WriteLine("Incorrect Lessons Count!");
+
+                Console.WriteLine("Enter Subject Lessons Count or '`' to return:");
+
+                line = Console.ReadLine();
+
+                if (line == "`")
+                {
+                    Console.WriteLine("Enter Subject Name or '`' to return:");
+
+                    name = Console.ReadLine().Trim();
+
+                    Console.WriteLine("Enter Subject Lessons Count or '`' to return:");
+                }
+            }
+            Subject subject = new Subject(name, count);
+            return subject;
         }
 
         private static string SelectPhoneNumber()
