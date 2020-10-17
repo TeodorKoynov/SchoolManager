@@ -212,7 +212,7 @@
             }
             else
             {
-                Console.WriteLine(" ----------- Emty ------------");
+                Console.WriteLine(" ----------- Empty ------------");
             }
           
             Console.WriteLine("\n5 Teachers:");
@@ -225,7 +225,7 @@
             }
             else
             {
-                Console.WriteLine(" ----------- Emty ------------");
+                Console.WriteLine(" ----------- Empty ------------");
             }
 
             Console.WriteLine($"\n6 Student Classes:");
@@ -239,7 +239,7 @@
             }
             else
             {
-                Console.WriteLine(" ----------- Emty ------------");
+                Console.WriteLine(" ----------- Empty ------------");
             }
 
             Console.WriteLine("\n7 School Saff:");
@@ -252,7 +252,7 @@
             }
             else
             {
-                Console.WriteLine(" ----------- Emty ------------");
+                Console.WriteLine(" ----------- Empty ------------");
             }
 
             Console.WriteLine("\nTo edit enter component number:");
@@ -270,14 +270,17 @@
                     case "1":
                         EditSchoolName(schoolToEdit, schoolRepository, id);
                         break;
+
                     case "2":
                         EditSchoolType(schoolToEdit, schoolRepository, id);
                         break;
+
                     case "3":
                         EditSchoolDirector(schoolToEdit, schoolRepository, id);
                         break;
-                    case "4":
 
+                    case "4":
+                        EditSchoolViseDirectors(schoolToEdit, schoolRepository, id);
                         break;
                     case "5":
 
@@ -292,6 +295,89 @@
                         break;
                 }
             }
+        }
+
+        private static void EditSchoolViseDirectors(School schoolToEdit, SchoolRepository schoolRepository, int id)
+        {
+            Console.Clear();
+
+            Console.WriteLine("Current Vise Directors:");
+
+            if (schoolToEdit.ViseDirectors.Count() != 0)
+            {
+                foreach (Teacher viseDirector in schoolToEdit.ViseDirectors)
+                {
+                    Console.WriteLine($" - {viseDirector}");
+                }
+
+                Console.WriteLine("\n=== Available operation ===");
+                Console.WriteLine("  1.Add new Vise Director");
+                Console.WriteLine("  2.Edit Vise Director");
+
+                Console.WriteLine("\nEnter a number of the wish operation or '`' to return:");
+                
+                string line = Console.ReadLine().Trim();
+
+                if (line == "`")
+                {
+                    EditSchool(schoolToEdit, schoolRepository, id);
+                    return;
+                }
+                switch (line)
+                {
+                    case "1":
+                        AddViseDirector(schoolToEdit, schoolRepository, id);
+                        break;
+
+                    case "2":
+                        break;
+                    
+                    default:
+                        Console.WriteLine("Incorrect Number!");
+                        Console.WriteLine("Click Enter...");
+                        Console.ReadLine();
+                        EditSchoolViseDirectors(schoolToEdit, schoolRepository, id);
+                        return;
+                        break;
+                }
+            }
+            else
+            {
+                Console.WriteLine(" ----------- Empty ------------");
+
+                Console.WriteLine("\n=== Available operation ===");
+                Console.WriteLine("  1.Add new Vise Director");
+
+                Console.WriteLine("\nEnter a number of the wish operation or '`' to return::");
+                
+                string line = Console.ReadLine().Trim();
+
+                if (line == "`")
+                {
+                    EditSchool(schoolToEdit, schoolRepository, id);
+                    return;
+                }
+
+                switch (line)
+                {
+                    case "1":
+                        AddViseDirector(schoolToEdit, schoolRepository, id);
+                        break;
+
+                    default:
+                        Console.WriteLine("Incorrect Number!");
+                        Console.WriteLine("Click Enter...");
+                        Console.ReadLine();
+                        EditSchoolViseDirectors(schoolToEdit, schoolRepository, id);
+                        return;
+                        break;
+                }
+            }
+        }
+
+        private static void AddViseDirector(School schoolToEdit, SchoolRepository schoolRepository, int id)
+        {
+
         }
 
         private static void EditSchoolDirector(School schoolToEdit, SchoolRepository schoolRepository, int id)
@@ -321,20 +407,281 @@
                 case "1":
                     ChangeDirectorName(schoolToEdit, schoolRepository, id);
                     break;
+                
                 case "2":
                     ChangeDirectorPhoneNumber(schoolToEdit, schoolRepository, id);
                     break;
+                
                 case "3":
                     ChangeDirectorSalary(schoolToEdit, schoolRepository, id);
                     break;
+                
                 case "4":
+                    ChangeDirectorGender(schoolToEdit, schoolRepository, id);
                     break;
                 case "5":
+                    ChangeDirectorIdentityNumber(schoolToEdit, schoolRepository, id);
                     break;
                 case "6":
+                    ChangeDirectorBirthDate(schoolToEdit, schoolRepository, id);
                     break;
                 default:
                     break;
+            }
+        }
+
+        private static void ChangeDirectorBirthDate(School schoolToEdit, SchoolRepository schoolRepository, int id)
+        {
+            Console.Clear();
+
+            Console.WriteLine($"Current Birth Date: {schoolToEdit.Director.BirthDate.Date}");
+
+            Console.WriteLine($" 1.Day {schoolToEdit.Director.BirthDate.Day}");
+
+            Console.WriteLine($" 2.Month {schoolToEdit.Director.BirthDate.Month}");
+
+            Console.WriteLine($" 3.Year {schoolToEdit.Director.BirthDate.Year}");
+
+
+            Console.WriteLine("To edit component select the number of the component:");
+
+            Console.WriteLine("\nEnter number or '`' to return:");
+
+            string line = Console.ReadLine().Trim();
+
+            if (line == "`")
+            {
+                EditSchoolDirector(schoolToEdit, schoolRepository, id);
+                return;
+            }
+
+            switch (line)
+            {
+                case "1":
+                    Console.WriteLine("\nEnter new Day or '`' to return");
+
+                    line = Console.ReadLine().Trim();
+
+                    if (line == "`")
+                    {
+                        ChangeDirectorBirthDate(schoolToEdit, schoolRepository, id);
+                        return;
+                    }
+                    else
+                    {
+                        int day;
+                        while (!int.TryParse(line, out day) || !(day < 31 && day > 0))
+                        {
+                            Console.WriteLine("Incorrect Day!");
+
+                            Console.WriteLine("\nEnter new Day or '`' to return");
+
+                            line = Console.ReadLine();
+
+                            if (line == "`")
+                            {
+                                ChangeDirectorBirthDate(schoolToEdit, schoolRepository, id);
+                                return;
+                            }
+                        }
+                        day = int.Parse(line);
+
+                        int month = schoolToEdit.Director.BirthDate.Month;
+
+                        int year = schoolToEdit.Director.BirthDate.Year;
+
+                        schoolToEdit.Director.BirthDate = new DateTime(year, month, day);
+
+                        schoolRepository.Save(schoolToEdit);
+
+                        ChangeDirectorBirthDate(schoolToEdit, schoolRepository, id);
+                    }
+                    break;
+
+                case "2":
+                    Console.WriteLine("\nEnter new Month or '`' to return");
+
+                    line = Console.ReadLine().Trim();
+
+                    if (line == "`")
+                    {
+                        ChangeDirectorBirthDate(schoolToEdit, schoolRepository, id);
+                        return;
+                    }
+                    else
+                    {
+                        int month;
+                        while (!int.TryParse(line, out month) || !(month < 13 && month > 0))
+                        {
+                            Console.WriteLine("Incorrect Month!");
+
+                            Console.WriteLine("\nEnter new Month or '`' to return");
+
+                            line = Console.ReadLine();
+
+                            if (line == "`")
+                            {
+                                ChangeDirectorBirthDate(schoolToEdit, schoolRepository, id);
+                                return;
+                            }
+                        }
+                        month = int.Parse(line);
+
+                        int day = schoolToEdit.Director.BirthDate.Day;
+
+                        int year = schoolToEdit.Director.BirthDate.Year;
+
+                        schoolToEdit.Director.BirthDate = new DateTime(year, month, day);
+
+                        schoolRepository.Save(schoolToEdit);
+
+                        ChangeDirectorBirthDate(schoolToEdit, schoolRepository, id);
+                    }
+                    break;
+
+                case "3":
+                    Console.WriteLine("\nEnter new Year or '`' to return");
+
+                    line = Console.ReadLine().Trim();
+
+                    if (line == "`")
+                    {
+                        ChangeDirectorBirthDate(schoolToEdit, schoolRepository, id);
+                        return;
+                    }
+                    else
+                    {
+                        int year;
+                        while (!int.TryParse(line, out year) || !(year < 3000 && year > 1500))
+                        {
+                            Console.WriteLine("Incorrect Year!");
+
+                            Console.WriteLine("\nEnter new Year or '`' to return");
+
+                            line = Console.ReadLine();
+
+                            if (line == "`")
+                            {
+                                ChangeDirectorBirthDate(schoolToEdit, schoolRepository, id);
+                                return;
+                            }
+                        }
+                        year = int.Parse(line);
+
+                        int month = schoolToEdit.Director.BirthDate.Month;
+
+                        int day = schoolToEdit.Director.BirthDate.Day;
+
+                        schoolToEdit.Director.BirthDate = new DateTime(year, month, day);
+
+                        schoolRepository.Save(schoolToEdit);
+
+                        ChangeDirectorBirthDate(schoolToEdit, schoolRepository, id);
+                    }
+                    break;
+                default:
+                    if (line == "`")
+                    {
+                        EditSchoolDirector(schoolToEdit, schoolRepository, id);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Incorrect number!");
+
+                        Console.WriteLine("\nClick Enter...");
+
+                        Console.ReadLine();
+
+                        ChangeDirectorBirthDate(schoolToEdit, schoolRepository, id);
+                    }
+                    break;
+            }
+        }
+
+        private static void ChangeDirectorIdentityNumber(School schoolToEdit, SchoolRepository schoolRepository, int id)
+        {
+            Console.Clear();
+
+            Console.WriteLine($"Current Identity Number: {schoolToEdit.Director.IdentityNumber}");
+
+            Console.WriteLine("\nEnter new Identity Number or '`' to return:");
+
+            string line = Console.ReadLine().Trim();
+
+            if (line == "`")
+            {
+                EditSchoolDirector(schoolToEdit, schoolRepository, id);
+                return;
+            }
+            else 
+            {                 
+                while (!int.TryParse(line, out _) || line.Length != 10)
+                {
+                    Console.WriteLine("Invalid Identity Number!");
+
+                    Console.WriteLine("\nEnter new Identity Number or '`' to return:");
+
+                    line = Console.ReadLine();
+                    
+                    if (line == "`")
+                    {
+                        EditSchoolDirector(schoolToEdit, schoolRepository, id);
+                        return;
+                    }
+                }
+                schoolToEdit.Director.IdentityNumber = line;
+
+                schoolRepository.Save(schoolToEdit);
+
+                EditSchoolDirector(schoolToEdit, schoolRepository, id);
+            }
+        }
+
+        private static void ChangeDirectorGender(School schoolToEdit, SchoolRepository schoolRepository, int id)
+        {
+            Console.Clear();
+
+            Console.WriteLine($"Current Gender: {schoolToEdit.Director.Gender}");
+
+            Console.WriteLine("\nEnter Male or Female or '`' to return:");
+
+            string line = Console.ReadLine().Trim().ToLower();
+
+            if (line == "`")
+            {
+                EditSchoolDirector(schoolToEdit, schoolRepository, id);
+                return;
+            }
+            else
+            {
+                switch (line)
+                {
+                    case "male":
+                        schoolToEdit.Director.Gender = Gender.Male;
+
+                        schoolRepository.Save(schoolToEdit);
+
+                        EditSchoolDirector(schoolToEdit, schoolRepository, id);
+                        break;
+
+                    case "female":
+                        schoolToEdit.Director.Gender = Gender.Female;
+
+                        schoolRepository.Save(schoolToEdit);
+
+                        EditSchoolDirector(schoolToEdit, schoolRepository, id);
+                        break;
+
+                    default:
+                        Console.WriteLine("Incorrect Gender!");
+
+                        Console.WriteLine("\nClick Enter to continue...");
+
+                        Console.ReadLine();
+
+                        ChangeDirectorGender(schoolToEdit, schoolRepository, id);
+                        break;
+                }
             }
         }
 
