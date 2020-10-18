@@ -498,10 +498,14 @@
             {
                 Console.WriteLine($" -{subject.Name} lessons count: {subject.LessonsCount}");
             }
+            if (teacher.SpecializedSubjects.ToList().Count == 0)
+            {
+                Console.WriteLine(" ----------- Empty ------------");
+            }
 
             Console.WriteLine("\nEnter the number of the component to edit or '`' to return:");
 
-            string line = Console.ReadLine();
+            string line = Console.ReadLine().Trim();
 
             if (line == "`")
             {
@@ -536,6 +540,7 @@
                     break;
 
                 case "7":
+                    EditSpecialisedSubjects(schoolToEdit, schoolRepository, id, index);
                     break;
 
                 default:
@@ -549,6 +554,292 @@
 
                     return;
             }
+        }
+
+        private static void EditSpecialisedSubjects(School schoolToEdit, SchoolRepository schoolRepository, int id, int index)
+        {
+            Console.Clear();
+
+            Console.WriteLine($"== {schoolToEdit.TeachersStaff.ToList()[index].FirstName} {schoolToEdit.TeachersStaff.ToList()[index].MiddleName} {schoolToEdit.TeachersStaff.ToList()[index].LastName}'s Subjects ==");
+
+            int subjectIndex = 0;
+            foreach (Subject subject in schoolToEdit.TeachersStaff.ToList()[index].SpecializedSubjects)
+            {
+                subjectIndex++;
+                Console.WriteLine($"  {subjectIndex}. {subject.Name}, lessons count: {subject.LessonsCount}");
+            }
+
+            if (schoolToEdit.TeachersStaff.ToList()[index].SpecializedSubjects.ToList().Count == 0)
+            {
+                Console.WriteLine(" ----------- Empty ------------");
+            }
+
+            if (schoolToEdit.TeachersStaff.ToList()[index].SpecializedSubjects.Count() != 0)
+            {
+                Console.WriteLine("\n== Available operations ==");
+
+                Console.WriteLine(" 1.Add new Subject");
+
+                Console.WriteLine(" 2.Edit Subject");
+
+                Console.WriteLine(" 3.Delete Subject");
+
+                Console.WriteLine("\nEnter a number of the operation or '`' to return");
+
+                string line = Console.ReadLine().Trim();
+
+                if (line == "`")
+                {
+                    SelectTeacherFromStaff(schoolToEdit, schoolRepository, id, index);
+                    return;
+                }
+
+                switch (line)
+                {
+                    case "1":
+                        AddSubject(schoolToEdit, schoolRepository, id, index);
+                        break;
+                    case "2":
+                        Console.WriteLine("\nEnter Subject Number or '`' to return:");
+
+                        string newLine = Console.ReadLine().Trim();
+
+                        if (newLine == "`")
+                        {
+                            EditSpecialisedSubjects(schoolToEdit, schoolRepository, id, index);
+                            return;
+                        }
+
+                        int number;
+
+                        while (!int.TryParse(newLine, out number) || !(number > 0 && number <= schoolToEdit.ViseDirectors.ToList()[index].SpecializedSubjects.Count()))
+                        {
+                            Console.WriteLine("Incorrect Subject Number!");
+
+                            Console.WriteLine("\nEnter Subject Number or '`' to return:");
+
+                            newLine = Console.ReadLine().Trim();
+
+                            if (newLine == "`")
+                            {
+                                EditSpecialisedSubjects(schoolToEdit, schoolRepository, id, index);
+                                return;
+                            }
+                        }
+
+                        number = int.Parse(newLine);
+
+                        int indexSubject = number - 1;
+
+                        SelectSubjectSpecialised(schoolToEdit, schoolRepository, id, index, indexSubject);
+                        break;
+                    case "3":
+                        Console.WriteLine("\nEnter Subject Number or '`' to return:");
+
+                        string newLine1 = Console.ReadLine().Trim();
+
+                        if (newLine1 == "`")
+                        {
+                            EditSpecialisedSubjects(schoolToEdit, schoolRepository, id, index);
+                            return;
+                        }
+
+                        int number1;
+
+                        while (!int.TryParse(newLine1, out number1) || !(number1 > 0 && number1 <= schoolToEdit.ViseDirectors.ToList()[index].SpecializedSubjects.Count()))
+                        {
+                            Console.WriteLine("Incorrect Subject Number!");
+
+                            Console.WriteLine("\nEnter Subject Number or '`' to return:");
+
+                            newLine1 = Console.ReadLine().Trim();
+
+                            if (newLine1 == "`")
+                            {
+                                EditSpecialisedSubjects(schoolToEdit, schoolRepository, id, index);
+                                return;
+                            }
+                        }
+
+                        number1 = int.Parse(newLine1);
+
+                        int indexSubjectRemove = number1 - 1;
+
+                        RemoveSubject(schoolToEdit, schoolRepository, id, index, indexSubjectRemove);
+                        break;
+                    default:
+                        Console.WriteLine("\nIncorrect Number of operation!");
+                        Console.WriteLine("Click Enter...");
+                        Console.ReadLine();
+                        EditSpecialisedSubjects(schoolToEdit, schoolRepository, id, index);
+                        return;
+                        break;
+                }
+            }
+            else
+            {
+                Console.WriteLine("\n== Available operations ==");
+
+                Console.WriteLine(" 1.Add new Subject");
+
+                Console.WriteLine("\nEnter a number of the operation or '`' to return");
+
+                string line = Console.ReadLine().Trim();
+
+                if (line == "`")
+                {
+                    SelectTeacherFromStaff(schoolToEdit, schoolRepository, id, index);
+                    return;
+                }
+
+                switch (line)
+                {
+                    case "1":
+                        AddSubject(schoolToEdit, schoolRepository, id, index);
+                        return;
+                        break;
+                    default:
+                        Console.WriteLine("\nIncorrect Number of operation!");
+                        Console.WriteLine("Click Enter...");
+                        Console.ReadLine();
+                        EditSpecialisedSubjects(schoolToEdit, schoolRepository, id, index);
+                        return;
+                        break;
+                }
+            }
+        }
+
+        private static void RemoveSubject(School schoolToEdit, SchoolRepository schoolRepository, int id, int index, int indexSubjectRemove)
+        {
+            List<Subject> subjects = schoolToEdit.TeachersStaff.ToList()[index].SpecializedSubjects.ToList();
+
+            subjects.RemoveAt(indexSubjectRemove);
+
+            schoolToEdit.TeachersStaff.ToList()[index].SpecializedSubjects = subjects;
+
+            schoolRepository.Save(schoolToEdit);
+
+            EditSpecialisedSubjects(schoolToEdit, schoolRepository, id, index);
+            return;
+        }
+
+        private static void SelectSubjectSpecialised(School schoolToEdit, SchoolRepository schoolRepository, int id, int index, int indexSubject)
+        {
+            Console.Clear();
+
+            Console.WriteLine($"1.Name: {schoolToEdit.TeachersStaff.ToList()[index].SpecializedSubjects.ToList()[indexSubject].Name}");
+            
+            Console.WriteLine($"2.Lessons Count: {schoolToEdit.TeachersStaff.ToList()[index].SpecializedSubjects.ToList()[indexSubject].LessonsCount}");
+
+            Console.WriteLine("\nEnter the number of the component to edit or '`' to return:");
+
+            string line = Console.ReadLine().Trim();
+
+            if (line == "`")
+            {
+                EditSpecialisedSubjects(schoolToEdit, schoolRepository, id, index);
+                return;
+            }
+
+            switch (line)
+            {
+                case "1":
+                    ChangeSubjectName(schoolToEdit, schoolRepository, id, index, indexSubject);
+                    break;
+                case "2":
+                    ChangeSubjectLessonsCount(schoolToEdit, schoolRepository, id, index, indexSubject);
+                    break;
+                
+                default:
+                    Console.WriteLine("\nInvalid Number!");
+
+                    Console.WriteLine("Click Enter...");
+
+                    Console.ReadLine();
+
+                    SelectSubjectSpecialised(schoolToEdit, schoolRepository, id, index, indexSubject);
+                    return;
+                    break;
+            }
+        }
+
+        private static void ChangeSubjectLessonsCount(School schoolToEdit, SchoolRepository schoolRepository, int id, int index, int indexSubject)
+        {
+            Console.WriteLine("\nEnter a new Count for the Lesson from 0 to 100 or '`' to return:");
+
+            string line = Console.ReadLine().Trim();
+
+            if (line == "`")
+            {
+                SelectSubjectSpecialised(schoolToEdit, schoolRepository, id, index, indexSubject);
+                return;
+            }
+
+            int lessonCount;
+
+            while (!int.TryParse(line, out lessonCount) || !(lessonCount >= 0 && lessonCount <= 100))
+            {
+                Console.WriteLine("\nInvalid Count for the Lessons!");
+                
+                Console.WriteLine("Enter a new Count for the Lesson from 0 to 100 or '`' to return:");
+                
+                line = Console.ReadLine().Trim();
+
+                if (line == "`")
+                {
+                    SelectSubjectSpecialised(schoolToEdit, schoolRepository, id, index, indexSubject);
+                    return;
+                }
+            }
+
+            lessonCount = int.Parse(line);
+
+            schoolToEdit.TeachersStaff.ToList()[index].SpecializedSubjects.ToList()[indexSubject].LessonsCount = lessonCount;
+
+            schoolRepository.Save(schoolToEdit);
+
+            SelectSubjectSpecialised(schoolToEdit, schoolRepository, id, index, indexSubject);
+            return;
+        }
+
+        private static void ChangeSubjectName(School schoolToEdit, SchoolRepository schoolRepository, int id, int index, int indexSubject)
+        {
+            Console.WriteLine("\nEnter a new Name or '`' to return:");
+
+            string line = Console.ReadLine().Trim();
+
+            if (line == "`")
+            {
+                SelectSubjectSpecialised(schoolToEdit, schoolRepository, id, index, indexSubject);
+                return;
+            }
+
+            schoolToEdit.TeachersStaff.ToList()[index].SpecializedSubjects.ToList()[indexSubject].Name = line;
+
+            schoolRepository.Save(schoolToEdit);
+
+            SelectSubjectSpecialised(schoolToEdit, schoolRepository, id, index, indexSubject);
+            return;
+        }
+
+        private static void AddSubject(School schoolToEdit, SchoolRepository schoolRepository, int id, int index)
+        {
+            Console.Clear();
+
+            Console.WriteLine("Create new Subject:");
+
+            Subject subject = SelectSubject();
+
+            List<Subject> subjects = schoolToEdit.TeachersStaff.ToList()[index].SpecializedSubjects.ToList();
+
+            subjects.Add(subject);
+
+            schoolToEdit.TeachersStaff.ToList()[index].SpecializedSubjects = subjects;
+
+            schoolRepository.Save(schoolToEdit);
+
+            EditSpecialisedSubjects(schoolToEdit, schoolRepository, id, index);
+            return;
         }
 
         private static void ChangeTeacherBirthDate(School schoolToEdit, SchoolRepository schoolRepository, int id, int index)
@@ -1198,7 +1489,6 @@
                     return;
             }
         }
-
 
         private static void ChangeViseDirectorBirthDate(School schoolToEdit, SchoolRepository schoolRepository, int id, int index)
         {
