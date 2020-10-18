@@ -54,10 +54,20 @@
             students.Add(student1);
             students.Add(student2);
 
-            StudentClass studentClass1 = new StudentClass(ClassGrade.Forth, GradeChar.A, students, teacher1);
+            StudentClass studentClass1 = new StudentClass(ClassGrade.Eigth, GradeChar.A, students, teacher1);
+            StudentClass studentClass2 = new StudentClass(ClassGrade.Forth, GradeChar.A, students, teacher1);
+            StudentClass studentClass3 = new StudentClass(ClassGrade.Eigth, GradeChar.B, students, teacher1);
+            StudentClass studentClass4 = new StudentClass(ClassGrade.Forth, GradeChar.E, students, teacher1);
+            StudentClass studentClass5 = new StudentClass(ClassGrade.Twelfth, GradeChar.A, students, teacher1);
+
 
             List<StudentClass> studentClasses1 = new List<StudentClass>();
             studentClasses1.Add(studentClass1);
+            studentClasses1.Add(studentClass2);
+            studentClasses1.Add(studentClass3);
+            studentClasses1.Add(studentClass4);
+            studentClasses1.Add(studentClass5);
+
 
             Human human21 = new Human("Milko", "Nqkoq", "Kenova", Gender.Female, 60, dateTime1, "0983849209", "08771728942");
             Human human22 = new Human("Lina", "Nqkoq", "Peeva", Gender.Female, 60, dateTime1, "0983849209", "08771728942");
@@ -292,7 +302,7 @@
                         EditSchoolTeachers(schoolToEdit, schoolRepository, id);
                         break;
                     case "6":
-
+                        EditSchoolClasses(schoolToEdit, schoolRepository, id);
                         break;
                     case "7":
 
@@ -308,6 +318,291 @@
                         return;
                 }
             }
+        }
+
+        private static void EditSchoolClasses(School schoolToEdit, SchoolRepository schoolRepository, int id)
+        {
+            Console.Clear();
+
+            Console.WriteLine("Current Classes:");
+
+            schoolToEdit.StudentClasses.ToList();
+
+            int number = 0;
+
+            var sortedClasses =
+                from studentClass in schoolToEdit.StudentClasses
+                orderby studentClass.Grade, studentClass.GradeChar ascending
+                select studentClass;
+
+            foreach (StudentClass studentClass in sortedClasses)
+            {
+                number++;
+                Console.WriteLine($"{number}.{studentClass.Grade} {studentClass.GradeChar} ");
+            }
+            
+            if (schoolToEdit.StudentClasses.Count() != 0)
+            {
+                Console.WriteLine("\nAvailable operation:");
+
+                Console.WriteLine("1.Add new Grade");
+
+                Console.WriteLine("2.Select Grade");
+
+                Console.WriteLine("3.Delete Grade");
+
+                Console.WriteLine("\nEnter the number of the operation or '`' to return:");
+
+                string line = Console.ReadLine();
+
+                if (line == "`")
+                {
+                    EditSchool(schoolToEdit, schoolRepository, id);
+                    return;
+                }
+
+                switch (line)
+                {
+                    case "1":
+                        AddGrade(schoolToEdit, schoolRepository, id);
+                        break;
+
+                    case "2":
+                        break;
+
+                    case "3":
+                        break;
+
+                    default:
+                        Console.WriteLine("\nInvalid Number!");
+
+                        Console.WriteLine("Click Enter...");
+
+                        Console.ReadLine();
+
+                        EditSchoolClasses(schoolToEdit, schoolRepository, id);
+                        return;
+                        break;
+                }
+            }
+            else
+            {
+                Console.WriteLine(" ----------- Empty ------------");
+
+                Console.WriteLine("\nAvailable operation:");
+
+                Console.WriteLine("1.Add new Grade");
+
+                Console.WriteLine("\nEnter the number of the operation or '`' to return:");
+
+                string line = Console.ReadLine();
+
+                if (line == "`")
+                {
+                    EditSchool(schoolToEdit, schoolRepository, id);
+                    return;
+                }
+
+                switch (line)
+                {
+                    case "1":
+                        AddGrade(schoolToEdit, schoolRepository, id);
+                        break;
+
+                    default:
+                        Console.WriteLine("\nInvalid Number!");
+
+                        Console.WriteLine("Click Enter...");
+
+                        Console.ReadLine();
+
+                        EditSchoolClasses(schoolToEdit, schoolRepository, id);
+                        return;
+                        break;
+                }
+            }
+        }
+
+        private static void AddGrade(School schoolToEdit, SchoolRepository schoolRepository, int id)
+        {
+            Console.Clear();
+
+            ClassGrade classGrade = SelectGrade();
+
+            GradeChar gradeChar = SelectGradeChar();
+
+            List<Student> students = new List<Student>();
+
+            StudentClass studentClass = new StudentClass(classGrade, gradeChar, students, null);
+
+            List<StudentClass> studentClasses = schoolToEdit.StudentClasses.ToList();
+
+            studentClasses.Add(studentClass);
+
+            schoolToEdit.StudentClasses = studentClasses;
+
+            schoolRepository.Save(schoolToEdit);
+
+            EditSchoolClasses(schoolToEdit, schoolRepository, id);
+            return;
+        }
+
+        private static GradeChar SelectGradeChar()
+        {
+            Console.WriteLine("Enter the Grade:");
+
+            Console.WriteLine("A, B, V, G, D, E, J, Z");
+
+            GradeChar gradeChar = GradeChar.A;
+
+            string line = Console.ReadLine().Trim().ToLower();
+
+            bool loop = true;
+
+            while (loop)
+            {
+                switch (line)
+                {
+                    case "a":
+                        gradeChar = GradeChar.A;
+                        loop = false;
+                        break;
+
+                    case "b":
+                        gradeChar = GradeChar.B;
+                        loop = false;
+                        break;
+
+                    case "v":
+                        gradeChar = GradeChar.V;
+                        loop = false;
+                        break
+                            ;
+                    case "g":
+                        gradeChar = GradeChar.G;
+                        loop = false;
+                        break;
+
+                    case "d":
+                        gradeChar = GradeChar.D;
+                        loop = false;
+                        break;
+
+                    case "e":
+                        gradeChar = GradeChar.E;
+                        loop = false;
+                        break;
+
+                    case "j":
+                        gradeChar = GradeChar.J;
+                        loop = false;
+                        break;
+
+                    case "z":
+                        gradeChar = GradeChar.Z;
+                        loop = false;
+                        break;
+
+                    default:
+                        Console.WriteLine("\nInvalid Grade!");
+
+                        Console.WriteLine("\nEnter the Grade:");
+
+                        Console.WriteLine("A, B, V, G, D, E, J, Z");
+
+                        line = Console.ReadLine().Trim().ToLower();
+                        break;
+                }
+            }
+            return gradeChar;
+        }
+
+        private static ClassGrade SelectGrade()
+        {
+            Console.WriteLine("Enter the Grade:");
+            Console.WriteLine("First, Second, Third,\nForth, Fifth, Sixth,\nSeventh, Eigth, Ninth,\nTenth, Eleven, Twelfth");
+
+            string line = Console.ReadLine().Trim().ToLower();
+
+            ClassGrade classGrade = ClassGrade.First;
+
+            bool loop = true;
+
+            while (loop)
+            {
+                switch (line)
+                {
+                    case "first":
+                        classGrade = ClassGrade.First;
+                        loop = false;
+                        break;
+
+                    case "second":
+                        classGrade = ClassGrade.Second;
+                        loop = false;
+                        break;
+                    case "third":
+                        classGrade = ClassGrade.Third;
+                        loop = false;
+                        break;
+
+                    case "forth":
+                        classGrade = ClassGrade.Forth;
+                        loop = false;
+                        break;
+
+                    case "fifth":
+                        classGrade = ClassGrade.Fifth;
+                        loop = false;
+                        break;
+
+                    case "sixth":
+                        classGrade = ClassGrade.Sixth;
+                        loop = false;
+                        break;
+
+                    case "seventh":
+                        classGrade = ClassGrade.Seventh;
+                        loop = false;
+                        break;
+
+                    case "eigth":
+                        classGrade = ClassGrade.Eigth;
+                        loop = false;
+                        break;
+
+                    case "ninth":
+                        classGrade = ClassGrade.Ninth;
+                        loop = false;
+                        break;
+
+                    case "tenth":
+                        classGrade = ClassGrade.Tenth;
+                        loop = false;
+                        break;
+
+                    case "eleven":
+                        classGrade = ClassGrade.Eleven;
+                        loop = false;
+                        break;
+
+                    case "twelfth":
+                        classGrade = ClassGrade.Twelfth;
+                        loop = false;
+                        break;
+
+                    default:
+                        Console.WriteLine("\nInvalid Grade!");
+
+                        Console.WriteLine("\nEnter the Grade:");
+
+                        Console.WriteLine("First, Second, Third,\nForth, Fifth, Sixth,\nSeventh, Eigth, Ninth,\nTenth, Eleven, Twelfth");
+
+                        line = Console.ReadLine().Trim().ToLower();
+                        break;
+                }
+            }
+            return classGrade;
         }
 
         private static void EditSchoolTeachers(School schoolToEdit, SchoolRepository schoolRepository, int id)
