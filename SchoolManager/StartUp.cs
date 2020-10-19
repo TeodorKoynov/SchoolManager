@@ -247,9 +247,17 @@
            
             if (schoolToEdit.StudentClasses.Count() != 0)
             {
-                foreach (StudentClass studentClass in schoolToEdit.StudentClasses)
+                var sortedClasses =
+                                from studentClass in schoolToEdit.StudentClasses
+                                orderby studentClass.Grade, studentClass.GradeChar ascending
+                                select studentClass;
+
+                int number = 0;
+
+                foreach (StudentClass studentClass in sortedClasses)
                 {
-                    Console.WriteLine($" --- {studentClass}");
+                    number++;
+                    Console.WriteLine($"{number}.{studentClass.Grade} {studentClass.GradeChar} ");
                 }
             }
             else
@@ -368,6 +376,39 @@
                         break;
 
                     case "2":
+                        Console.WriteLine("\nEnter the number of the grade to select or '`' to return:");
+
+                        string lineNew = Console.ReadLine().Trim();
+
+                        if (lineNew == "`")
+                        {
+                            EditSchoolClasses(schoolToEdit, schoolRepository, id);
+                            return;
+                        }
+
+                        int schoolClassNumber;
+
+                        while (!int.TryParse(lineNew, out schoolClassNumber) || !(schoolClassNumber > 0 && schoolClassNumber <= schoolToEdit.StudentClasses.Count()))
+                        {
+                            Console.WriteLine("/nInvalid number!");
+
+                            Console.WriteLine("\nEnter the number of the grade to select or '`' to return:");
+
+                            lineNew = Console.ReadLine();
+
+                            if (lineNew == "`")
+                            {
+                                EditSchoolClasses(schoolToEdit, schoolRepository, id);
+                                return;
+                            }
+                        }
+
+                        int schoolClassInex = schoolClassNumber - 1;
+
+                        SelectGradeFromGrages(schoolToEdit, schoolRepository, id, schoolClassNumber);
+                        
+                        return;
+
                         break;
 
                     case "3":
@@ -421,6 +462,196 @@
                         break;
                 }
             }
+        }
+
+        private static void SelectGradeFromGrages(School schoolToEdit, SchoolRepository schoolRepository, int id, int schoolClassNumber)
+        {
+            Console.Clear();
+
+            Console.WriteLine($"Grade: {schoolToEdit.StudentClasses.ToList()[schoolClassNumber].Grade} {schoolToEdit.StudentClasses.ToList()[schoolClassNumber].GradeChar}");
+
+            Console.WriteLine($"1.Main Teacher: {schoolToEdit.StudentClasses.ToList()[schoolClassNumber].MainTeacher.FirstName} {schoolToEdit.StudentClasses.ToList()[schoolClassNumber].MainTeacher.MiddleName} {schoolToEdit.StudentClasses.ToList()[schoolClassNumber].MainTeacher.LastName}");
+
+            Console.WriteLine($"2.Students:");
+
+            if (schoolToEdit.StudentClasses.ToList()[schoolClassNumber].Students.Count() != 0)
+            {
+                var sortedStudents =
+                    from student in schoolToEdit.StudentClasses.ToList()[schoolClassNumber].Students.ToList()
+                    orderby student.FirstName, student.MiddleName, student.LastName
+                    select student;
+
+                int number = 0;
+
+                foreach (Student student in sortedStudents)
+                {
+                    number++;
+                    Console.WriteLine($" {number} {student.FirstName} {student.MiddleName} {student.LastName}");
+                }
+            }
+            else
+            {
+                Console.WriteLine(" ----------- Empty ------------");
+            }
+
+            Console.WriteLine("Enter the number of the component or '`' to return:");
+
+            string line = Console.ReadLine().Trim();
+
+            if (line == "`")
+            {
+                EditSchoolClasses(schoolToEdit, schoolRepository, id);
+                return;
+            }
+
+            switch (line)
+            {
+                case "1":
+                    SelectHeadTeacher(schoolToEdit, schoolRepository, id, schoolClassNumber);
+                    break;
+                case "2":
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private static void SelectHeadTeacher(School schoolToEdit, SchoolRepository schoolRepository, int id, int schoolClassNumber)
+        {
+            Console.Clear();
+
+            Teacher teacher = schoolToEdit.StudentClasses.ToList()[schoolClassNumber].MainTeacher;
+
+            Console.WriteLine($"=== {schoolToEdit.StudentClasses.ToList()[schoolClassNumber].Grade} {schoolToEdit.StudentClasses.ToList()[schoolClassNumber].GradeChar}'s Teacher ===");
+
+            Console.WriteLine($" 1.{teacher.FirstName} {teacher.MiddleName} {teacher.LastName}");
+
+            Console.WriteLine($" 2.Phone number: {teacher.PhoneNumber}");
+
+            Console.WriteLine($" 3.Salary: {teacher.Salary}");
+
+            Console.WriteLine($" 4.Gender: {teacher.Gender}");
+
+            Console.WriteLine($" 5.Identity number: {teacher.IdentityNumber}");
+
+            Console.WriteLine($" 6.Birth date: {teacher.BirthDate}");
+
+            Console.WriteLine($" 7.Specialized Subjects:");
+            foreach (Subject subject in teacher.SpecializedSubjects)
+            {
+                Console.WriteLine($" -{subject.Name} lessons count: {subject.LessonsCount}");
+            }
+            if (teacher.SpecializedSubjects.ToList().Count == 0)
+            {
+                Console.WriteLine(" ----------- Empty ------------");
+            }
+
+            Console.WriteLine("\nEnter the number of the component to edit or '`' to return:");
+
+            string line = Console.ReadLine().Trim();
+
+            if (line == "`")
+            {
+                SelectGradeFromGrages(schoolToEdit, schoolRepository, id, schoolClassNumber);
+                return;
+            }
+
+            switch (line)
+            {
+                case "1":
+                    ChangeHeadTeacherName(schoolToEdit, schoolRepository, id, schoolClassNumber);
+                    break;
+
+                case "2":
+                  //  ChangeTeacherPhoneNumber(schoolToEdit, schoolRepository, id, index);
+                    break;
+
+                case "3":
+                   // ChangeTeacherSalary(schoolToEdit, schoolRepository, id, index);
+                    break;
+
+                case "4":
+                  //  ChangeTeacherGender(schoolToEdit, schoolRepository, id, index);
+                    break;
+
+                case "5":
+                  //  ChangeTeacherIdentityNumber(schoolToEdit, schoolRepository, id, index);
+                    break;
+
+                case "6":
+                 //   ChangeTeacherBirthDate(schoolToEdit, schoolRepository, id, index);
+                    break;
+
+                case "7":
+                  //  EditSpecialisedSubjects(schoolToEdit, schoolRepository, id, index);
+                    break;
+
+                default:
+                    Console.WriteLine("\nIncorrect Component Number!");
+
+                    Console.WriteLine("Click Enter...");
+
+                    Console.ReadLine();
+
+                    SelectHeadTeacher(schoolToEdit, schoolRepository, id, schoolClassNumber);
+
+                    return;
+            }
+        }
+
+        private static void ChangeHeadTeacherName(School schoolToEdit, SchoolRepository schoolRepository, int id, int schoolClassNumber)
+        {
+            Console.Clear();
+
+            Teacher teacher = schoolToEdit.StudentClasses.ToList()[schoolClassNumber].MainTeacher;
+
+            Console.WriteLine($"Current Teacher's Name: {teacher.FirstName} {teacher.MiddleName} {teacher.LastName}");
+
+            Console.WriteLine("\nEnter new First Name:");
+
+            string line = Console.ReadLine().Trim();
+
+            while (int.TryParse(line, out _))
+            {
+                Console.WriteLine("Incorrect Name!");
+                Console.WriteLine("\nEnter new First Name:");
+                line = Console.ReadLine().Trim();
+            }
+
+            teacher.FirstName = line;
+
+            Console.WriteLine("\nEnter new Middle Name:");
+
+            line = Console.ReadLine().Trim();
+
+            while (int.TryParse(line, out _))
+            {
+                Console.WriteLine("Incorrect Name!");
+                Console.WriteLine("\nEnter new Middle Name:");
+                line = Console.ReadLine().Trim();
+            }
+
+            teacher.MiddleName = line;
+
+            Console.WriteLine("\nEnter new Last Name:");
+
+            line = Console.ReadLine().Trim();
+
+            while (int.TryParse(line, out _))
+            {
+                Console.WriteLine("Incorrect Name!");
+                Console.WriteLine("\nEnter new Last Name:");
+                line = Console.ReadLine().Trim();
+            }
+
+            teacher.LastName = line;
+
+            schoolToEdit.StudentClasses.ToList()[schoolClassNumber].MainTeacher = teacher;
+
+            schoolRepository.Save(schoolToEdit);
+
+            SelectHeadTeacher(schoolToEdit, schoolRepository, id, schoolClassNumber);
+            return;
         }
 
         private static void AddGrade(School schoolToEdit, SchoolRepository schoolRepository, int id)
