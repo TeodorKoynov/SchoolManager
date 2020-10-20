@@ -510,10 +510,130 @@
                     SelectHeadTeacher(schoolToEdit, schoolRepository, id, schoolClassNumber);
                     break;
                 case "2":
+                    SelectStudents(schoolToEdit, schoolRepository, id, schoolClassNumber);
                     break;
                 default:
                     break;
             }
+        }
+
+        private static void SelectStudents(School schoolToEdit, SchoolRepository schoolRepository, int id, int schoolClassNumber)
+        {
+            Console.Clear();
+
+            Console.WriteLine($"== Students of {schoolToEdit.StudentClasses.ToList()[schoolClassNumber].Grade} {schoolToEdit.StudentClasses.ToList()[schoolClassNumber].GradeChar} ==");
+
+            if (schoolToEdit.StudentClasses.ToList()[schoolClassNumber].Students.Count() != 0)
+            {
+                var sortedStudents =
+                    from student in schoolToEdit.StudentClasses.ToList()[schoolClassNumber].Students.ToList()
+                    orderby student.FirstName, student.MiddleName, student.LastName
+                    select student;
+
+                int number = 0;
+
+                foreach (Student student in sortedStudents)
+                {
+                    number++;
+                    Console.WriteLine($" {number} {student.FirstName} {student.MiddleName} {student.LastName}");
+                }
+
+                Console.WriteLine("\nAvailable operations:");
+                Console.WriteLine("1.Add Student");
+                Console.WriteLine("2.Edit Student");
+                Console.WriteLine("3.Delete Student");
+
+                Console.WriteLine("\nEnter the number ot the operation or '`' to return:");
+
+                string line = Console.ReadLine().Trim();
+
+                if (line == "`")
+                {
+                    SelectGradeFromGrages(schoolToEdit, schoolRepository, id, schoolClassNumber);
+                    return;
+                }
+
+                switch (line)
+                {
+                    case "1":
+                        AddStudent(schoolToEdit, schoolRepository, id, schoolClassNumber);
+                        break;
+                    case "2":
+                        break;
+                    case "3":
+                        break;
+                    default:
+                        break;
+                }
+
+            }
+            else
+            {
+                Console.WriteLine(" ----------- Empty ------------");
+
+                Console.WriteLine("\nAvailable operations:");
+                Console.WriteLine("1.Add Student");
+
+                Console.WriteLine("\nEnter the number ot the operation or '`' to return:");
+
+                string line = Console.ReadLine().Trim();
+
+                if (line == "`")
+                {
+                    SelectGradeFromGrages(schoolToEdit, schoolRepository, id, schoolClassNumber);
+                    return;
+                }
+
+                switch (line)
+                {
+                    case "1":
+                        AddStudent(schoolToEdit, schoolRepository, id, schoolClassNumber);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        private static void AddStudent(School schoolToEdit, SchoolRepository schoolRepository, int id, int schoolClassNumber)
+        {
+            Console.Clear();
+
+            Console.WriteLine("Create new Student:");
+
+            Student student = SelectStudent();
+
+            List<Student> students = schoolToEdit.StudentClasses.ToList()[schoolClassNumber].Students.ToList();
+
+            students.Add(student);
+
+            schoolToEdit.StudentClasses.ToList()[schoolClassNumber].Students = students;
+
+            schoolRepository.Save(schoolToEdit);
+
+            SelectStudents(schoolToEdit, schoolRepository, id, schoolClassNumber);
+
+            return;
+        }
+
+        private static Student SelectStudent()
+        {
+            Human human = SelectHuman();
+
+            Console.WriteLine("Please, Enter a Parent Phone Number:");
+
+            string line = Console.ReadLine().Trim();
+
+            while (line.Length != 10 || !int.TryParse(line, out _))
+            {
+                Console.WriteLine("Please, Enter a Correct Parent Phone Number!");
+
+                line = Console.ReadLine().Trim();
+            }
+
+            Student student = new Student(human, line);
+
+            return student;
         }
 
         private static void SelectHeadTeacher(School schoolToEdit, SchoolRepository schoolRepository, int id, int schoolClassNumber)
@@ -753,6 +873,7 @@
                 }
             }
         }
+        
         private static void RemoveHeadTeacherSubject(School schoolToEdit, SchoolRepository schoolRepository, int id, int schoolClassNumber, int indexSubjectRemove)
         {
             Teacher teacher = schoolToEdit.StudentClasses.ToList()[schoolClassNumber].MainTeacher;
