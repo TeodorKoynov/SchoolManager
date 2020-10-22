@@ -17,6 +17,24 @@
             this.salary = salary;
         }
 
+        public int Salary
+        {
+            get
+            {
+                return this.salary;
+            }
+            set
+            {
+                this.salary = value;
+            }
+        }
+
+        public WorkPosition WorkPosition
+        {
+            get { return this.position; }
+            set { this.position = value; }
+        }
+
         public override string ToString()
         {
             return $"{this.FirstName} {this.MiddleName} {this.LastName} is {this.position}";
